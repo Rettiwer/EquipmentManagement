@@ -1,4 +1,4 @@
-package com.rettiwer.equipmentmanagement.configuration.jwt;
+package com.rettiwer.equipmentmanagement.authentication.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

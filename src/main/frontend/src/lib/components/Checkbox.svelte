@@ -19,8 +19,8 @@
         <input
                 type=checkbox
                 class="checkbox"
-                value={value}
                 bind:checked={checked}
+                {...$$restProps}
                 on:click={() => change()}
         />
         <span class="ml-2 text-sm select-none text-gray-600">{ label }</span>

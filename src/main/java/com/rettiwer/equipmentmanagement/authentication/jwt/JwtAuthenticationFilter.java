@@ -1,4 +1,4 @@
-package com.rettiwer.equipmentmanagement.configuration.jwt;
+package com.rettiwer.equipmentmanagement.authentication.jwt;
 
 import com.rettiwer.equipmentmanagement.authentication.token.TokenRepository;
 import jakarta.servlet.FilterChain;

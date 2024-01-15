@@ -1,11 +1,5 @@
-<script context="module">
-    import {title} from "../../+layout.svelte";
-</script>
-
 <script lang="ts">
     import Button from "$lib/components/Button.svelte";
-
-    $title = "Login";
 
     let employeeEquipment = [
         {
@@ -35,6 +29,10 @@
     ];
 
 </script>
+
+<svelte:head>
+    <title>Equipment - EM</title>
+</svelte:head>
 
 <section class="flex flex-col xl:flex-row justify-around p-10">
     <section class="w-full max-w-4xl sm:mr-10 h-max">

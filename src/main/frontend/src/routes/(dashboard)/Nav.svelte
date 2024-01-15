@@ -10,9 +10,9 @@
 <nav>
     <div class="navbar bg-primary relative text-white md:hidden">
         <div class="flex flex-1 pl-4">
-            <span class="font-mono font-black text-2xl">EJOT</span>
+            <span class="font-mono font-black text-2xl">EM</span>
             <div class="divider divider-horizontal before:bg-base-100 after:bg-base-100"></div>
-            <span class="text-sm font-mono font-medium">Ewidencja Wyposażenia</span>
+            <span class="text-sm font-mono font-medium">Equipment Management</span>
         </div>
         <div>
             <div class="btn btn-ghost btn-circle" on:click={() => (visibleMobileMenu = !visibleMobileMenu)}>

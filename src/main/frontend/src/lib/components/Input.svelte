@@ -4,7 +4,7 @@
     let inputElement: HTMLInputElement;
     let className = '';
 
-    export let value: string = "", label: string = "", placeholder: string = "", parentClass: string = "";
+    export let label: string = "", placeholder: string = "", parentClass: string = "";
     export { className as class };
 
     onMount(() => {
@@ -20,7 +20,6 @@
         <span class="label-text">{ label } {@html $$restProps.required ? '<span class="text-primary">*</span>' : ''}</span>
     </label>
     <input
-            bind:value
             bind:this={inputElement}
             on:input
             {...$$restProps}

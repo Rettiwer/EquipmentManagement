@@ -1,17 +1,14 @@
 package com.rettiwer.equipmentmanagement.authentication;
 
-import com.rettiwer.equipmentmanagement.CustomException;
 import com.rettiwer.equipmentmanagement.authentication.token.Token;
 import com.rettiwer.equipmentmanagement.authentication.token.TokenRepository;
 import com.rettiwer.equipmentmanagement.authentication.token.TokenType;
-import com.rettiwer.equipmentmanagement.configuration.jwt.JwtService;
+import com.rettiwer.equipmentmanagement.authentication.jwt.JwtService;
 import com.rettiwer.equipmentmanagement.user.User;
 import com.rettiwer.equipmentmanagement.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,9 +39,11 @@ public class AuthenticationService {
                 .build();
     }
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(),
-                    authenticationRequest.getPassword()));
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authenticationRequest.getEmail(),
+                        authenticationRequest.getPassword()));
+
             var user = repository.findByEmail(authenticationRequest.getEmail())
                     .orElseThrow();
             var jwtToken = jwtService.generateToken(user);
@@ -55,9 +54,6 @@ public class AuthenticationService {
                     .accessToken(jwtToken)
                     .refreshToken(refreshToken)
                     .build();
-        } catch (AuthenticationException e) {
-            throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
-        }
     }
 
     private void saveUserToken(User user, String jwtToken) {
