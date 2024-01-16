@@ -2,6 +2,7 @@ package com.rettiwer.equipmentmanagement.user;
 
 
 import com.rettiwer.equipmentmanagement.authentication.token.Token;
+import com.rettiwer.equipmentmanagement.item.Item;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,8 @@ public class User implements UserDetails {
     private Integer id;
     private String firstname;
     private String lastname;
+
+    @Column(unique = true)
     private String email;
     private String password;
 
@@ -33,6 +36,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Item> items;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
