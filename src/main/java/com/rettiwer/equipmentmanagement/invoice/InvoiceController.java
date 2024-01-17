@@ -1,27 +1,19 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
 @RestController
 @RequestMapping(path = "/invoice")
+@RequiredArgsConstructor
 public class InvoiceController {
+    private InvoiceService invoiceService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, String> index() {
-        Map<String, String> json = new HashMap<>();
-        json.put("message", "Hello world");
-        return json;
-    }
-
-    @PostMapping
-    public ResponseEntity<String> create() {
-        return ResponseEntity.ok("SUCCESS");
+    @PostMapping( consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Invoice> create(@RequestBody InvoiceDTO request) {
+        return new ResponseEntity<>(invoiceService.create(request), HttpStatus.CREATED);
     }
 }

@@ -15,9 +15,9 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String invoice_id;
+    private String invoiceId;
 
-    private Date invoice_date;
+    private Date invoiceDate;
 
     @OneToMany(mappedBy = "invoice")
     private List<Item> items;
