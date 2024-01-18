@@ -1,5 +1,6 @@
 package com.rettiwer.equipmentmanagement.apierror;
 
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,18 +14,18 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import static org.springframework.http.HttpStatus.*;
 
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice
 @Slf4j
+@RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
@@ -34,6 +35,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<Object> handleAuthenticationException(Exception ex) {
         String msg = "These credentials do not match our records.";
+        return buildResponseEntity(new ApiError(UNAUTHORIZED, msg, ex));
+    }
+
+    @ExceptionHandler({ MalformedJwtException.class })
+    @ResponseBody
+    public ResponseEntity<Object> handleInvalidJWTException(Exception ex) {
+        String msg = "Access token is invalid.";
         return buildResponseEntity(new ApiError(UNAUTHORIZED, msg, ex));
     }
 

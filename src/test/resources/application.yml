@@ -15,3 +15,9 @@ application:
       expiration: 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
+  api:
+    route: http://localhost:${server.port}/api
+
+logging:
+  level:
+    _org.springframework.web.servlet.HandlerMapping.Mappings: debug

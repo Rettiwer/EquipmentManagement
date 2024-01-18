@@ -1,21 +1,27 @@
 package com.rettiwer.equipmentmanagement.api;
 
+import com.rettiwer.equipmentmanagement.invoice.InvoiceDTO;
 import com.rettiwer.equipmentmanagement.user.Role;
 import com.rettiwer.equipmentmanagement.user.User;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Date;
+
 import static com.rettiwer.equipmentmanagement.EquipmentManagementApplicationTest.ACCESS_TOKEN;
-import static com.rettiwer.equipmentmanagement.EquipmentManagementApplicationTest.API_ROOT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TokenAuthenticateEndpointTest {
-    private static final String API_ROUTE = API_ROOT + "/auth";
+    @Value("${application.api.route}/auth")
+    private String API_ROUTE;
 
     @Test
     @Order(1)
