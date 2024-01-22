@@ -5,8 +5,11 @@ import com.rettiwer.equipmentmanagement.authentication.token.TokenRepository;
 import com.rettiwer.equipmentmanagement.authentication.token.TokenType;
 import com.rettiwer.equipmentmanagement.authentication.jwt.JwtService;
 import com.rettiwer.equipmentmanagement.user.User;
+import com.rettiwer.equipmentmanagement.user.UserDTO;
+import com.rettiwer.equipmentmanagement.user.UserMapper;
 import com.rettiwer.equipmentmanagement.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +23,8 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
+    private UserMapper userMapper;
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()

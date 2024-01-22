@@ -1,6 +1,5 @@
 package com.rettiwer.equipmentmanagement.api;
 
-import com.rettiwer.equipmentmanagement.invoice.InvoiceDTO;
 import com.rettiwer.equipmentmanagement.user.Role;
 import com.rettiwer.equipmentmanagement.user.User;
 import io.restassured.RestAssured;
@@ -11,9 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Date;
-
-import static com.rettiwer.equipmentmanagement.EquipmentManagementApplicationTest.ACCESS_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -44,8 +40,6 @@ public class TokenAuthenticateEndpointTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(user)
                 .post(API_ROUTE + "/authenticate");
-
-        ACCESS_TOKEN = response.jsonPath().get("access_token");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
         assertNotNull(response.jsonPath().get("access_token"));

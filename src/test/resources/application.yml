@@ -3,10 +3,23 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
-    username: sa
-    password: sa
-    driver-class-name: org.h2.Driver
+    url: jdbc:mariadb://192.168.1.19:9306/em
+    username: root
+    password: 123456
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+#spring:
+#  datasource:
+#    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+#    username: sa
+#    password: sa
+#    driver-class-name: org.h2.Driver
 
 application:
   security:

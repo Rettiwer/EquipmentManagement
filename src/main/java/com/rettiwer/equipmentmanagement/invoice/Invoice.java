@@ -1,24 +1,29 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
+import com.fasterxml.jackson.annotation.*;
 import com.rettiwer.equipmentmanagement.item.Item;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Invoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String invoiceId;
+    private LocalDate invoiceDate;
 
-    private Date invoiceDate;
-
-    @OneToMany(mappedBy = "invoice")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<Item> items;
 }

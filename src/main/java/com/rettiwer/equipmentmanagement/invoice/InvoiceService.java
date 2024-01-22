@@ -1,40 +1,35 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
+import com.rettiwer.equipmentmanagement.CycleAvoidingMappingContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Slf4j
 
 @Service
 @RequiredArgsConstructor
 public class InvoiceService {
-
     private final InvoiceRepository invoiceRepository;
+    private final InvoiceMapper invoiceMapper;
 
-    public Invoice create(InvoiceDTO invoiceDTO) {
-        Invoice invoice = convertToEntity(invoiceDTO);
-        return invoiceRepository.save(invoice);
+    public List<InvoiceItemsDTO> getAll() {
+        return invoiceMapper.toListDtoWithItems(invoiceRepository.findAll(), new CycleAvoidingMappingContext());
     }
 
-    private InvoiceDTO convertToDto(Invoice invoice) {
-        return new InvoiceDTO(invoice.getId(),
-                invoice.getInvoiceId(),
-                invoice.getInvoiceDate(),
-                invoice.getItems());
+    public InvoiceDTO store(InvoiceDTO invoiceDTO) {
+        Invoice invoice = invoiceMapper.toEntity(invoiceDTO);
+        return invoiceMapper.toDto(invoiceRepository.save(invoice));
     }
 
-    private Invoice convertToEntity(InvoiceDTO invoiceDTO) {
-        Invoice invoice = new Invoice();
+    @Transactional
+    public InvoiceItemsDTO createWithItems(InvoiceItemsDTO invoiceItemsDTO) {
+        invoiceItemsDTO.getItems().forEach(item -> item.setInvoice(invoiceItemsDTO));
 
-        if (invoiceDTO.id() != null)
-            invoice.setId(invoiceDTO.id());
-
-        invoice.setInvoiceId(invoiceDTO.invoice_id());
-        invoice.setInvoiceDate(invoiceDTO.invoice_date());
-        invoice.setItems(invoiceDTO.items());
-
-
-        return invoice;
+        Invoice invoice = invoiceMapper.toEntityWithItems(invoiceItemsDTO, new CycleAvoidingMappingContext());
+        return invoiceMapper.toDtoWithItems(invoiceRepository.save(invoice), new CycleAvoidingMappingContext());
     }
-
 }

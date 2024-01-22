@@ -1,15 +1,23 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import com.rettiwer.equipmentmanagement.item.Item;
-
-import java.util.Date;
-import java.util.List;
-
-public record InvoiceDTO(
-        Long id,
-        String invoice_id,
-        Date invoice_date,
-        List<Item> items
-) {
+import java.time.LocalDate;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class InvoiceDTO {
+    private Long id;
+    @NotEmpty
+    @Size(min = 4)
+    private String invoiceId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate invoiceDate;
 }

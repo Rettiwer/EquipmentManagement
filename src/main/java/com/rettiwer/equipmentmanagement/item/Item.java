@@ -1,20 +1,24 @@
 package com.rettiwer.equipmentmanagement.item;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.*;
 import com.rettiwer.equipmentmanagement.invoice.Invoice;
 import com.rettiwer.equipmentmanagement.user.User;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
 @Entity
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -23,13 +27,13 @@ public class Item {
 
     private String comment;
 
+    /*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User owner;
+    private User owner;*/
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invoice_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name="invoice_id", nullable = false)
+    @JsonIgnore
     private Invoice invoice;
-
-
 }

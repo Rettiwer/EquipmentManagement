@@ -38,8 +38,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @OneToMany(mappedBy = "owner")
-    private List<Item> items;
+//    @OneToMany(mappedBy = "owner")
+//    private List<Item> items;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,6 +1,8 @@
 package com.rettiwer.equipmentmanagement.configuration;
 
+import com.rettiwer.equipmentmanagement.authentication.jwt.JwtAuthenticationEntryPoint;
 import com.rettiwer.equipmentmanagement.authentication.jwt.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,19 +35,25 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+        return new JwtAuthenticationEntryPoint();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> {
                     cors.configurationSource(corsConfigurationSource());
                 })
                 .authorizeHttpRequests(request -> request
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .anyRequest().authenticated())
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling((exception) -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint())
+                        .accessDeniedPage("/error/access-denied"));
 
         return http.build();
     }

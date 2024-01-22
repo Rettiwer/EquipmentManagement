@@ -1,15 +1,23 @@
 package com.rettiwer.equipmentmanagement.item;
 
-import com.rettiwer.equipmentmanagement.invoice.InvoiceDTO;
-import com.rettiwer.equipmentmanagement.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-public record ItemDTO(
-        String name,
-        BigDecimal price,
-        String comment,
-        User owner,
-        InvoiceDTO invoice
-) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ItemDTO {
+    private Long id;
+    private String name;
+    private BigDecimal price;
+    private String comment;
+    private Integer ownerId;
+    @JsonIgnore
+    private Long invoiceId;
 }
