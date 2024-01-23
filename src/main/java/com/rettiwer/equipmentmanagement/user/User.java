@@ -4,28 +4,29 @@ package com.rettiwer.equipmentmanagement.user;
 import com.rettiwer.equipmentmanagement.authentication.token.Token;
 import com.rettiwer.equipmentmanagement.item.Item;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
-@Data
+@Entity
+@Getter
+@Setter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String firstname;
+
     private String lastname;
 
     @Column(unique = true)
@@ -38,8 +39,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-//    @OneToMany(mappedBy = "owner")
-//    private List<Item> items;
+    @OneToMany(mappedBy = "owner")
+    private List<Item> items;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

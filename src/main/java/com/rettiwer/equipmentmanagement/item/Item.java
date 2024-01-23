@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = false)
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Item {
@@ -27,10 +27,10 @@ public class Item {
 
     private String comment;
 
-    /*
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User owner;*/
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name="invoice_id", nullable = false)

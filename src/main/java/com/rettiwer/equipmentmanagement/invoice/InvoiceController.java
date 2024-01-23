@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/invoice")
+@RequestMapping(path = "/invoices")
 @RequiredArgsConstructor
 public class InvoiceController {
     private final InvoiceService invoiceService;
@@ -20,12 +20,4 @@ public class InvoiceController {
     public ResponseEntity<?> create(@RequestBody InvoiceDTO request) {
         return new ResponseEntity<>(invoiceService.store(request), HttpStatus.CREATED);
     }
-
-    /*
-        @PostMapping( consumes = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<?> create(@RequestBody InvoiceItemsDTO request) {
-            return new ResponseEntity<>(invoiceService.createWithItems(request), HttpStatus.CREATED);
-        }
-
-     */
 }

@@ -26,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockAccessTokenExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class InvoiceEndpointTest {
-    @Value("${application.api.route}/invoice")
+    @Value("${application.api.route}/invoices")
     private String API_ROUTE;
 
-    @Value("${application.api.route}/item")
+    @Value("${application.api.route}/items")
     private String API_ROUTE_ITEMS;
 
     @MockAccessToken
