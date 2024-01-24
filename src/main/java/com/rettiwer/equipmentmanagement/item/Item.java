@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "items")
 public class Item {
 
     @Id

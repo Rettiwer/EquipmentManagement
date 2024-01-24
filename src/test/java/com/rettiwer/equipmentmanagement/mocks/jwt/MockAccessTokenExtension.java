@@ -1,9 +1,8 @@
-package com.rettiwer.equipmentmanagement.jwt;
+package com.rettiwer.equipmentmanagement.mocks.jwt;
 
-import com.rettiwer.equipmentmanagement.authentication.AuthenticationRequest;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
-import com.rettiwer.equipmentmanagement.user.Role;
+import com.rettiwer.equipmentmanagement.user.role.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -12,6 +11,8 @@ import org.junit.platform.commons.support.ModifierSupport;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.List;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -45,7 +46,7 @@ public class MockAccessTokenExtension implements BeforeEachCallback {
                 "Test",
                 "someone@example.com",
                 "SecretPass!",
-                Role.ADMIN
+                List.of("ROLE_ADMIN")
         )).getAccessToken();
     }
 }

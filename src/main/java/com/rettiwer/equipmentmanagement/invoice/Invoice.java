@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@Table(name = "invoice")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Invoice {

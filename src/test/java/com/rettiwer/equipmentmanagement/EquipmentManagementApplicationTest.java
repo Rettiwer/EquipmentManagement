@@ -1,8 +1,5 @@
 package com.rettiwer.equipmentmanagement;
 
-import com.rettiwer.equipmentmanagement.user.Role;
-import com.rettiwer.equipmentmanagement.user.User;
-import com.rettiwer.equipmentmanagement.user.UserDTO;
 import org.springframework.boot.test.context.SpringBootTest;
 
 

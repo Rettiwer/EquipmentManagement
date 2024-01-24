@@ -8,13 +8,22 @@ import com.rettiwer.equipmentmanagement.user.User;
 import com.rettiwer.equipmentmanagement.user.UserDTO;
 import com.rettiwer.equipmentmanagement.user.UserMapper;
 import com.rettiwer.equipmentmanagement.user.UserRepository;
+import com.rettiwer.equipmentmanagement.user.role.Role;
+import com.rettiwer.equipmentmanagement.user.role.RoleMapper;
+import com.rettiwer.equipmentmanagement.user.role.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -23,18 +32,15 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
-                .build();
+        var user = userMapper.registerRequestToEntity(request);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         var savedUser = repository.save(user);
+
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);

@@ -2,8 +2,8 @@ package com.rettiwer.equipmentmanagement.api;
 
 import com.rettiwer.equipmentmanagement.invoice.InvoiceItemsDTO;
 import com.rettiwer.equipmentmanagement.item.ItemInvoiceDTO;
-import com.rettiwer.equipmentmanagement.jwt.MockAccessToken;
-import com.rettiwer.equipmentmanagement.jwt.MockAccessTokenExtension;
+import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessToken;
+import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessTokenExtension;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;

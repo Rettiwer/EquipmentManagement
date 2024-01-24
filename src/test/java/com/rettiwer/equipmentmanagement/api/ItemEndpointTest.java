@@ -1,19 +1,12 @@
 package com.rettiwer.equipmentmanagement.api;
 
-import ch.qos.logback.core.model.INamedModel;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rettiwer.equipmentmanagement.invoice.Invoice;
 import com.rettiwer.equipmentmanagement.invoice.InvoiceDTO;
-import com.rettiwer.equipmentmanagement.invoice.InvoiceItemsDTO;
 import com.rettiwer.equipmentmanagement.invoice.InvoiceMapper;
 import com.rettiwer.equipmentmanagement.item.ItemDTO;
-import com.rettiwer.equipmentmanagement.item.ItemInvoiceDTO;
-import com.rettiwer.equipmentmanagement.jwt.MockAccessToken;
-import com.rettiwer.equipmentmanagement.jwt.MockAccessTokenExtension;
+import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessToken;
+import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessTokenExtension;
 import io.restassured.RestAssured;
-import io.restassured.mapper.ObjectMapper;
-import io.restassured.mapper.ObjectMapperDeserializationContext;
-import io.restassured.mapper.ObjectMapperSerializationContext;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -27,8 +20,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
