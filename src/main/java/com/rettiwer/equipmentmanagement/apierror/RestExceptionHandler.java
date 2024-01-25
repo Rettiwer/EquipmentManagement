@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,12 @@ public class RestExceptionHandler {
      * Handle AuthenticationException. Triggered when a credentials are wrong.
      */
     @ExceptionHandler({ AuthenticationException.class })
-    @ResponseBody
     public ResponseEntity<Object> handleAuthenticationException(Exception ex) {
         String msg = "These credentials do not match our records.";
         return buildResponseEntity(new ApiError(UNAUTHORIZED, msg, ex));
     }
 
     @ExceptionHandler({ MalformedJwtException.class })
-    @ResponseBody
     public ResponseEntity<Object> handleInvalidJWTException(Exception ex) {
         String msg = "Access token is invalid.";
         return buildResponseEntity(new ApiError(UNAUTHORIZED, msg, ex));
@@ -72,6 +71,7 @@ public class RestExceptionHandler {
     /**
      * Handle MissingServletRequestParameterException. Triggered when a 'required' request parameter is missing.
      */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
@@ -83,6 +83,7 @@ public class RestExceptionHandler {
     /**
      * Handle HttpMediaTypeNotSupportedException. This one triggers when JSON is invalid as well.
      */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
             HttpMediaTypeNotSupportedException ex,
             HttpHeaders headers,
@@ -102,11 +103,13 @@ public class RestExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
                                                                   WebRequest request) {
+
         if (ex.getCause() instanceof ConstraintViolationException) {
             return buildResponseEntity(new ApiError(HttpStatus.CONFLICT, "Database error", ex.getCause()));
         }
-        return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex));
+        return buildResponseEntity(new ApiError(INTERNAL_SERVER_ERROR, ex));
     }
+
 
     /**
      * Handle Exception, handle generic Exception.class

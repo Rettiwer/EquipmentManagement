@@ -2,6 +2,7 @@ package com.rettiwer.equipmentmanagement.api;
 
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import com.rettiwer.equipmentmanagement.user.role.Role;
+import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
@@ -26,14 +27,14 @@ public class TokenAuthenticateEndpointTest {
     @Order(1)
     public void whenUserCreated_withNotExistingRole_thenError() {
         RegisterRequest registerRequest = createNewUser();
-        registerRequest.setRoles(List.of("NOT_EXISTING_ROLE"));
+        registerRequest.setRoles(List.of(new RoleDTO("NOT_EXISTING_ROLE")));
 
         Response response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(registerRequest)
                 .post(API_ROUTE + "/register");
 
-        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
     }
     @Test
     @Order(2)
@@ -50,6 +51,18 @@ public class TokenAuthenticateEndpointTest {
 
     @Test
     @Order(3)
+    public void whenUserCreated_isExisting_thenError() {
+        RegisterRequest registerRequest = createNewUser();
+        Response response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(registerRequest)
+                .post(API_ROUTE + "/register");
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
     public void whenUserAuthenticated_thenTokenReturned() {
         RegisterRequest registerRequest = createNewUser();
         Response response = RestAssured.given()
@@ -67,7 +80,7 @@ public class TokenAuthenticateEndpointTest {
         user.setFirstname("John");
         user.setLastname("Smith");
         user.setPassword("StrongPass!");
-        user.setRoles(List.of("ROLE_ADMIN"));
+        user.setRoles(List.of(new RoleDTO("ROLE_ADMIN")));
         return user;
     }
 }

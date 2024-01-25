@@ -27,7 +27,7 @@ import java.util.Set;
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ExtendWith(SpringExtension.class)
-//@ExtendWith(MockAccessTokenExtension.class)
+@ExtendWith(MockAccessTokenExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @RequiredArgsConstructor
 public class UserEndpointTest {
@@ -35,7 +35,7 @@ public class UserEndpointTest {
     @Value("${application.api.route}/users")
     private String API_ROUTE_USERS;
 
-   // @MockAccessToken
+    @MockAccessToken
     private String ACCESS_TOKEN;
 
     @Autowired

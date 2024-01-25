@@ -5,23 +5,14 @@ import com.rettiwer.equipmentmanagement.authentication.token.TokenRepository;
 import com.rettiwer.equipmentmanagement.authentication.token.TokenType;
 import com.rettiwer.equipmentmanagement.authentication.jwt.JwtService;
 import com.rettiwer.equipmentmanagement.user.User;
-import com.rettiwer.equipmentmanagement.user.UserDTO;
 import com.rettiwer.equipmentmanagement.user.UserMapper;
 import com.rettiwer.equipmentmanagement.user.UserRepository;
-import com.rettiwer.equipmentmanagement.user.role.Role;
-import com.rettiwer.equipmentmanagement.user.role.RoleMapper;
-import com.rettiwer.equipmentmanagement.user.role.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service

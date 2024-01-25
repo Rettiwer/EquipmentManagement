@@ -1,6 +1,9 @@
 package com.rettiwer.equipmentmanagement.authentication;
 
-import com.fasterxml.jackson.databind.annotation.EnumNaming;
+import com.rettiwer.equipmentmanagement.authentication.validator.UniqueEmail;
+import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.util.List;
@@ -11,9 +14,35 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
+    @NotNull
+    @NotEmpty
+    @Size(min=3, max = 32)
+    @Pattern(regexp = "[A-Za-z]+")
     private String firstname;
+
+    @NotNull
+    @NotEmpty
+    @Size(min=3, max = 32)
+    @Pattern(regexp = "[A-Za-z]+")
     private String lastname;
+
+    @NotNull
+    @NotEmpty
+    @Email
+    @UniqueEmail
+    @Pattern(regexp=".+@.+\\..+")
     private String email;
+
+    @NotNull
+    @NotEmpty
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Pattern.List({
+            @Pattern(regexp = "(?=.*[a-z]).+", message = "Password must contain one lowercase letter."),
+            @Pattern(regexp = "(?=.*[A-Z]).+", message = "Password must contain one upper letter."),
+            @Pattern(regexp = "(?=.*[!@#$%^&*+=?-_()/\"\\.,<>~`;:]).+", message ="Password must contain one special character."),
+    })
     private String password;
-    private List<String> roles;
+
+    @Valid
+    private List<RoleDTO> roles;
 }

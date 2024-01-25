@@ -3,6 +3,7 @@ package com.rettiwer.equipmentmanagement.mocks.jwt;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import com.rettiwer.equipmentmanagement.user.role.Role;
+import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -46,7 +47,7 @@ public class MockAccessTokenExtension implements BeforeEachCallback {
                 "Test",
                 "someone@example.com",
                 "SecretPass!",
-                List.of("ROLE_ADMIN")
+                List.of(new RoleDTO("ROLE_ADMIN"))
         )).getAccessToken();
     }
 }

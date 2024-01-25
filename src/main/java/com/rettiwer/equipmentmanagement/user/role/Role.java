@@ -7,14 +7,15 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Table(name = "roles")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NonNull
     @Enumerated(EnumType.STRING)
     private UserRole name;
 

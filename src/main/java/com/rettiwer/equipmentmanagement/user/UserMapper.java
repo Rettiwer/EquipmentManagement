@@ -2,7 +2,7 @@ package com.rettiwer.equipmentmanagement.user;
 
 import com.rettiwer.equipmentmanagement.ReferenceMapper;
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
-import com.rettiwer.equipmentmanagement.user.role.RoleMapper;
+import com.rettiwer.equipmentmanagement.user.role.mapper.RoleMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
