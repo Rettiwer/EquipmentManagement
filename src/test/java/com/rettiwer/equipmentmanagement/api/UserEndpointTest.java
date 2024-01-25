@@ -38,9 +38,6 @@ public class UserEndpointTest {
     @MockAccessToken
     private String ACCESS_TOKEN;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
 
     @Test
     @Order(1)

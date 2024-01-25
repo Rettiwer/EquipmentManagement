@@ -38,7 +38,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -47,12 +47,13 @@ public class User implements UserDetails {
     private List<Role> roles;
 
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "owner")
     private List<Item> items;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "supervisor_employees",
             joinColumns = @JoinColumn(name = "supervisor_id"),
@@ -64,6 +65,10 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
        return roles.stream()
                .map(role -> new SimpleGrantedAuthority(role.getName().name())).toList();
+    }
+
+    public boolean hasRole(Role.UserRole userRole) {
+        return roles.stream().anyMatch(role -> role.getName() == userRole);
     }
 
     @Override

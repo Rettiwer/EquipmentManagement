@@ -92,6 +92,7 @@ public class InvoiceEndpointTest {
                 "Sample Item",
                 new BigDecimal("32.3"),
                 "Last repaired by Don",//First user from mocked token
+                1,
                 null));
 
         items.add(new ItemInvoiceDTO(
@@ -99,7 +100,7 @@ public class InvoiceEndpointTest {
                 "Sample Second Item",
                 new BigDecimal("55.5"),
                 null,
-                //First user from mocked token
+                1,
                 null));
 
         return new InvoiceItemsDTO(

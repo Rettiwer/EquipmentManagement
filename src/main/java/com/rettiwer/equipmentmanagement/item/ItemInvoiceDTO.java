@@ -14,7 +14,7 @@ public class ItemInvoiceDTO {
     private String name;
     private BigDecimal price;
     private String comment;
-   // private Integer ownerId;
+    private Integer ownerId;
     @JsonIgnoreProperties(value = { "items" })
     private InvoiceItemsDTO invoice;
 
