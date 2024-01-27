@@ -1,7 +1,7 @@
 package com.rettiwer.equipmentmanagement.user;
 
-import com.rettiwer.equipmentmanagement.item.ItemInvoiceDTO;
-import com.rettiwer.equipmentmanagement.user.role.Role;
+import com.rettiwer.equipmentmanagement.item.ItemDTO;
+import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,7 +14,7 @@ public class UserDTO {
     private String firstname;
     private String lastname;
     private String email;
-    private Role role;
-    private List<ItemInvoiceDTO> items;
+    private List<RoleDTO> roles;
+    private List<ItemDTO> items;
     private List<User> employees;
 }

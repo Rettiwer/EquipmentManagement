@@ -35,6 +35,5 @@ public class Item {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name="invoice_id", nullable = false)
-    @JsonIgnore
     private Invoice invoice;
 }

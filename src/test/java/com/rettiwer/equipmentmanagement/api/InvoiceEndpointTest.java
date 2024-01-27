@@ -1,7 +1,7 @@
 package com.rettiwer.equipmentmanagement.api;
 
+import com.rettiwer.equipmentmanagement.api.utils.DatabaseSeeder;
 import com.rettiwer.equipmentmanagement.invoice.InvoiceItemsDTO;
-import com.rettiwer.equipmentmanagement.item.ItemInvoiceDTO;
 import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessToken;
 import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessTokenExtension;
 import io.restassured.RestAssured;
@@ -14,11 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -26,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockAccessTokenExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class InvoiceEndpointTest {
-    @Value("${application.api.route}/invoices")
+    @Value("${application.api.route}")
     private String API_ROUTE;
 
     @Value("${application.api.route}/items")
@@ -37,8 +32,8 @@ public class InvoiceEndpointTest {
 
     @Test
     @Order(1)
-    public void creatInvoice_thenUnauthorized() {
-        InvoiceItemsDTO invoice = generateNewInvoice();
+    void creatInvoice_thenUnauthorized() {
+        InvoiceItemsDTO invoice = DatabaseSeeder.generateInvoice(2, ACCESS_TOKEN, API_ROUTE);
         Response response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(invoice)
@@ -48,66 +43,35 @@ public class InvoiceEndpointTest {
     }
     @Test
     @Order(2)
-    public void whenInvoiceCreated_returnCreated() {
-        InvoiceItemsDTO invoice = generateNewInvoice();
+    void whenInvoiceCreated_returnCreated() {
+        InvoiceItemsDTO invoice = DatabaseSeeder.generateInvoice(2, ACCESS_TOKEN, API_ROUTE);
+
         Response response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
                 .body(invoice)
                 .post(API_ROUTE);
 
-        //assertEquals(HttpStatus.CREATED.value(), response.getStatusCode());
+        assertEquals(HttpStatus.CREATED.value(), response.getStatusCode());
     }
 
     @Test
     @Order(3)
-    public void getAllInvoices_thenReturnList() {
+    void getAllInvoices_thenReturnList() {
         Response response = RestAssured.given()
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
                 .get(API_ROUTE);
-
-        response.prettyPrint();
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
     }
 
     @Test
     @Order(4)
-    public void getAllItems_thenReturnList() {
+    void getAllItems_thenReturnList() {
         Response response = RestAssured.given()
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
                 .get(API_ROUTE_ITEMS);
 
-        response.prettyPrint();
-
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-    }
-
-
-    private InvoiceItemsDTO generateNewInvoice() {
-        List<ItemInvoiceDTO> items = new ArrayList<>();
-
-        items.add(new ItemInvoiceDTO(
-                null,
-                "Sample Item",
-                new BigDecimal("32.3"),
-                "Last repaired by Don",//First user from mocked token
-                1,
-                null));
-
-        items.add(new ItemInvoiceDTO(
-                null,
-                "Sample Second Item",
-                new BigDecimal("55.5"),
-                null,
-                1,
-                null));
-
-        return new InvoiceItemsDTO(
-                null,
-                "15/10/2022",
-                LocalDate.now(),
-                items
-        );
     }
 }

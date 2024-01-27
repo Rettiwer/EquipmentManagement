@@ -1,6 +1,6 @@
 package com.rettiwer.equipmentmanagement.item;
 
-import com.rettiwer.equipmentmanagement.CycleAvoidingMappingContext;
+import com.rettiwer.equipmentmanagement.invoice.InvoiceDTO;
 import com.rettiwer.equipmentmanagement.invoice.InvoiceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemService {
@@ -18,8 +17,8 @@ public class ItemService {
     public final InvoiceRepository invoiceRepository;
     public final ItemMapper itemMapper;
 
-    public List<ItemInvoiceDTO> getAll() {
-        return itemMapper.toListDtoWithInvoice(itemRepository.findAll(), new CycleAvoidingMappingContext());
+    public List<InvoiceDTO> getAll() {
+        return null;
     }
 
     public ItemDTO getItemById(Long id) {

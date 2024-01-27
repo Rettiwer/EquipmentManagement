@@ -15,6 +15,6 @@ public class RoleMapperResolver {
 
     @ObjectFactory
     public Role resolve(RoleDTO roleDTO, @TargetType Class<Role> role) {
-        return roleRepository.findByName(Role.UserRole.valueOf(roleDTO.getRole()));
+        return roleRepository.findByName(Role.UserRole.valueOf(roleDTO.getName()));
     }
 }

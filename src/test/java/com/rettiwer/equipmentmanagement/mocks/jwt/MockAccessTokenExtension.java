@@ -1,5 +1,6 @@
 package com.rettiwer.equipmentmanagement.mocks.jwt;
 
+import com.rettiwer.equipmentmanagement.api.utils.DatabaseSeeder;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import com.rettiwer.equipmentmanagement.user.role.Role;
@@ -42,12 +43,6 @@ public class MockAccessTokenExtension implements BeforeEachCallback {
 
     private String generateNewAccessToken(ExtensionContext context) {
         AuthenticationService service = SpringExtension.getApplicationContext(context).getBean(AuthenticationService.class);
-        return service.register(new RegisterRequest(
-                "Api",
-                "Test",
-                "someone@example.com",
-                "SecretPass!",
-                List.of(new RoleDTO("ROLE_ADMIN"))
-        )).getAccessToken();
+        return service.register(DatabaseSeeder.createNewUser()).getAccessToken();
     }
 }

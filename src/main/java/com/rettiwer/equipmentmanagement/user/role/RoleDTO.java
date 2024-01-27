@@ -12,5 +12,5 @@ import lombok.*;
 public class RoleDTO {
     @NotNull
     @ValidUserRole
-    private String role;
+    private String name;
 }
