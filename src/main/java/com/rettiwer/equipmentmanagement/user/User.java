@@ -1,19 +1,21 @@
 package com.rettiwer.equipmentmanagement.user;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rettiwer.equipmentmanagement.authentication.token.Token;
 import com.rettiwer.equipmentmanagement.item.Item;
 import com.rettiwer.equipmentmanagement.user.role.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -47,24 +49,27 @@ public class User implements UserDetails {
     private List<Role> roles;
 
     @OneToMany(mappedBy = "user")
-    @ToString.Exclude
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "owner")
     private List<Item> items;
 
-    @ManyToMany
-    @JoinTable(
-            name = "supervisor_employees",
-            joinColumns = @JoinColumn(name = "supervisor_id"),
-            inverseJoinColumns = @JoinColumn(name = "employee_id")
-    )
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(name = "supervisor_employee",
+            joinColumns = {@JoinColumn(name = "employee_id")},
+            inverseJoinColumns = {@JoinColumn(name = "supervisor_id")})
+    @JsonBackReference
+    private User supervisor;
+
+
+    @OneToMany(mappedBy = "supervisor")
     private List<User> employees;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-       return roles.stream()
-               .map(role -> new SimpleGrantedAuthority(role.getName().name())).toList();
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name())).toList();
     }
 
     public boolean hasRole(Role.UserRole userRole) {

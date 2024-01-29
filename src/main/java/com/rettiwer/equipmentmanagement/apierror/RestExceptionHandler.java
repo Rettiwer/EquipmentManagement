@@ -1,5 +1,6 @@
 package com.rettiwer.equipmentmanagement.apierror;
 
+import com.rettiwer.equipmentmanagement.apierror.exception.InsufficientPermissionException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -34,6 +35,15 @@ public class RestExceptionHandler {
     public ResponseEntity<Object> handleAuthenticationException(Exception ex) {
         String msg = "These credentials do not match our records.";
         return buildResponseEntity(new ApiError(UNAUTHORIZED, msg, ex));
+    }
+
+    @ExceptionHandler(InsufficientPermissionException.class)
+    protected ResponseEntity<Object> handleInsufficientPermissionException(Exception ex) {
+
+        String msg = "You do not have sufficient permissions to perform " +
+                "the requested action or access the requested resource.";
+
+        return buildResponseEntity(new ApiError(FORBIDDEN, msg, ex));
     }
 
     @ExceptionHandler({ MalformedJwtException.class })

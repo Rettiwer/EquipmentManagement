@@ -20,7 +20,7 @@ public class Role {
 
     @RequiredArgsConstructor
     public enum UserRole {
-        ROLE_USER("ROLE_USER"),
+        ROLE_EMPLOYEE("ROLE_EMPLOYEE"),
         ROLE_SUPERVISOR("ROLE_SUPERVISOR"),
         ROLE_ADMIN("ROLE_ADMIN");
 

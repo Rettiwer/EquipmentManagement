@@ -3,23 +3,24 @@ package com.rettiwer.equipmentmanagement.user;
 
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import com.rettiwer.equipmentmanagement.user.role.mapper.RoleMapper;
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring",
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {RoleMapper.class})
 public interface UserMapper {
 
     User idToEntity(Integer id);
 
+    @Mapping(target = "supervisorId", source = "supervisor.id")
     UserDTO toDto(User user);
 
     User toEntity(UserDTO userDTO);
 
     List<UserDTO> toUserDtoList(List<User> users);
 
+
+    @Mapping(source = "supervisorId", target = "supervisor")
     User registerRequestToEntity(RegisterRequest request);
 }

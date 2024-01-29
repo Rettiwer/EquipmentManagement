@@ -10,9 +10,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@ToString
+@RequiredArgsConstructor
 public class RegisterRequest {
     @NotNull
     @NotEmpty
@@ -43,6 +42,18 @@ public class RegisterRequest {
     })
     private String password;
 
+    @NotNull
+    @NotNull
     @Valid
     private List<RoleDTO> roles;
+
+    private Integer supervisorId;
+
+    public RegisterRequest(String firstname, String lastname, String email, String password, List<RoleDTO> roles) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
 }

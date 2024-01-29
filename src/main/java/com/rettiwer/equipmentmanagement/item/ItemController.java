@@ -18,7 +18,7 @@ public class ItemController {
         return new ResponseEntity<>(itemService.getAll(), HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody ItemDTO itemDTO) {
         return new ResponseEntity<>(itemService.insert(itemDTO), HttpStatus.CREATED);
     }

@@ -14,7 +14,8 @@ public class UserDTO {
     private String firstname;
     private String lastname;
     private String email;
+    private Integer supervisorId;
     private List<RoleDTO> roles;
     private List<ItemDTO> items;
-    private List<User> employees;
+    private List<UserDTO> employees;
 }
