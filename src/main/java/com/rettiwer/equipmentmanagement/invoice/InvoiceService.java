@@ -1,6 +1,9 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
+import com.rettiwer.equipmentmanagement.user.User;
+import com.rettiwer.equipmentmanagement.user.UserDTO;
 import com.rettiwer.equipmentmanagement.user.UserRepository;
+import com.rettiwer.equipmentmanagement.user.role.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,19 @@ public class InvoiceService {
         Invoice invoice = invoiceMapper.toEntity(invoiceDTO);
         return invoiceMapper.toDto(invoiceRepository.save(invoice));
     }
+
+//    public List<UserDTO> getAllUsersWithItems() {
+//        User user = authService.getCurrentUser().orElseThrow();
+//
+//        if (user.hasRole(Role.UserRole.ROLE_ADMIN))
+//            return userMapper.toUserDtoList(userRepository.findAll());
+//
+//
+//        if (user.hasRole(Role.UserRole.ROLE_SUPERVISOR))
+//            return userMapper.toUserDtoList(userRepository.findAll());
+//
+//        return List.of(userMapper.toDto(user));
+//    }
 
     @Transactional
     public InvoiceItemsDTO createWithItems(InvoiceItemsDTO invoiceItemsDTO) {

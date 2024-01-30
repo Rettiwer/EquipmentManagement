@@ -76,6 +76,10 @@ public class User implements UserDetails {
         return roles.stream().anyMatch(role -> role.getName() == userRole);
     }
 
+    public boolean hasAnyRole(List<Role.UserRole> userRoles) {
+        return roles.stream().anyMatch(role -> userRoles.contains(role.getName()));
+    }
+
     @Override
     public String getPassword() {
         return password;

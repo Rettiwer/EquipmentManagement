@@ -90,7 +90,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     void createEmployee_WithoutPermissions_thenReturnInsufficientPermissionException() {
         var employeeRequest = DatabaseSeeder.createNewUser();
         employeeRequest.setRoles(List.of(new RoleDTO("ROLE_EMPLOYEE")));
@@ -106,5 +106,31 @@ public class UserEndpointTest {
                 .post(API_ROUTE + "/users");
 
         assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
+    void createEmployee_thenUpdate() {
+        var employeeRequest = DatabaseSeeder.createNewUser();
+        employeeRequest.setRoles(List.of(new RoleDTO("ROLE_EMPLOYEE")));
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(employeeRequest)
+                .post(API_ROUTE_USERS).as(UserDTO.class);
+
+        response.setFirstname("TEST_NAME");
+        //After update password is null
+        response.setPassword(null);
+
+        var updateResponse = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(response)
+                .put(API_ROUTE_USERS + "/" + response.getId());
+
+        assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
+        assertEquals(response.getFirstname(), updateResponse.as(UserDTO.class).getFirstname());
     }
 }

@@ -1,6 +1,8 @@
 package com.rettiwer.equipmentmanagement.apierror;
 
 import com.rettiwer.equipmentmanagement.apierror.exception.InsufficientPermissionException;
+import com.rettiwer.equipmentmanagement.user.exception.UserHasEmployeesException;
+import com.rettiwer.equipmentmanagement.user.exception.UserHasItemsException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -44,6 +46,20 @@ public class RestExceptionHandler {
                 "the requested action or access the requested resource.";
 
         return buildResponseEntity(new ApiError(FORBIDDEN, msg, ex));
+    }
+
+    @ExceptionHandler(UserHasItemsException.class)
+    protected ResponseEntity<Object> handleUserHasItemsException(Exception ex) {
+
+        String msg = "User has assigned items, reassign them to other user before deletion.";
+        return buildResponseEntity(new ApiError(BAD_REQUEST, msg, ex));
+    }
+
+    @ExceptionHandler(UserHasEmployeesException.class)
+    protected ResponseEntity<Object> handleUserHasEmployeesException(Exception ex) {
+
+        String msg = "User has assigned employees, reassign them to other user before deletion.";
+        return buildResponseEntity(new ApiError(BAD_REQUEST, msg, ex));
     }
 
     @ExceptionHandler({ MalformedJwtException.class })
