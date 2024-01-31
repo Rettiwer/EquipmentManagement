@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class RegisterRequest {
     @NotNull
     @NotEmpty
@@ -48,12 +49,4 @@ public class RegisterRequest {
     private List<RoleDTO> roles;
 
     private Integer supervisorId;
-
-    public RegisterRequest(String firstname, String lastname, String email, String password, List<RoleDTO> roles) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-    }
 }

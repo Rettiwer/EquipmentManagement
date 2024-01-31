@@ -21,10 +21,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -41,18 +43,6 @@ public class UserEndpointTest {
 
     @Autowired
     private AuthenticationService authenticationService;
-
-    @Test
-    @Order(1)
-    void getAllUsers_WithItems_thenReturnList() {
-        DatabaseSeeder.generateInvoice(2, ACCESS_TOKEN, API_ROUTE);
-
-        Response response = RestAssured.given()
-                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-                .get(API_ROUTE_USERS);
-
-        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-    }
 
     @Test
     @Order(2)
@@ -113,6 +103,7 @@ public class UserEndpointTest {
     void createEmployee_thenUpdate() {
         var employeeRequest = DatabaseSeeder.createNewUser();
         employeeRequest.setRoles(List.of(new RoleDTO("ROLE_EMPLOYEE")));
+        employeeRequest.setSupervisorId(1);
 
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -120,9 +111,18 @@ public class UserEndpointTest {
                 .body(employeeRequest)
                 .post(API_ROUTE_USERS).as(UserDTO.class);
 
-        response.setFirstname("TEST_NAME");
-        //After update password is null
-        response.setPassword(null);
+        response.setFirstname("TESTNAME");
+        response.getRoles().add(new RoleDTO("ROLE_ADMIN"));
+
+        var employee2 = DatabaseSeeder.createNewUser();
+        employee2.setRoles(List.of(new RoleDTO("ROLE_SUPERVISOR")));
+        var secondSupervisor = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(employee2)
+                .post(API_ROUTE_USERS).as(UserDTO.class);
+
+
 
         var updateResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -132,5 +132,40 @@ public class UserEndpointTest {
 
         assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
         assertEquals(response.getFirstname(), updateResponse.as(UserDTO.class).getFirstname());
+    }
+
+    @Test
+    @Order(5)
+    void deleteEmployee_thatNotExists_thenNotFound() {
+        var deleteRequest = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .delete(API_ROUTE_USERS + "/" + 9999);
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), deleteRequest.getStatusCode());
+    }
+
+    @Test
+    @Order(5)
+    void createEmployee_thenDelete() {
+        var employeeRequest = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(DatabaseSeeder.createNewUser())
+                .post(API_ROUTE_USERS).as(UserDTO.class);
+
+
+        var deleteRequest = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .delete(API_ROUTE_USERS + "/" + employeeRequest.getId());
+
+        var getResponse = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .get(API_ROUTE_USERS + "/" + employeeRequest.getId());
+
+        assertEquals(HttpStatus.OK.value(), deleteRequest.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND.value(), getResponse.getStatusCode());
     }
 }

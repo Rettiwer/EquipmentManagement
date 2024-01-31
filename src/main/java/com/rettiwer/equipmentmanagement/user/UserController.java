@@ -1,5 +1,6 @@
 package com.rettiwer.equipmentmanagement.user;
 
+import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,19 +25,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody UserDTO userDTO) {
-        return new ResponseEntity<>(userService.replaceOrInsert(userDTO, null), HttpStatus.CREATED);
+    public ResponseEntity<?> create(@Valid @RequestBody RegisterRequest registerRequest) {
+        return new ResponseEntity<>(userService.create(registerRequest), HttpStatus.CREATED);
     }
 
     @PutMapping(value =  "/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody UserDTO userDTO, @Nullable @PathVariable("id") User user) {
-        return new ResponseEntity<>(userService.replaceOrInsert(userDTO, user),
-                user != null ? HttpStatus.OK : HttpStatus.CREATED);
+    public ResponseEntity<?> update(@Valid @RequestBody UserDTO userDTO, @PathVariable("id") Integer userId) {
+        return new ResponseEntity<>(userService.replace(userDTO, userId), HttpStatus.OK);
     }
 
     @DeleteMapping(value =  "/{id}")
-    public ResponseEntity<?> delete(@Nullable @PathVariable("id") User user) {
-        userService.delete(user);
+    public ResponseEntity<?> delete(@Nullable @PathVariable("id") Integer userId) {
+        userService.delete(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

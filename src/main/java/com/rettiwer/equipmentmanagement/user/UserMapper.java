@@ -14,11 +14,13 @@ public interface UserMapper {
     User idToEntity(Integer id);
 
     @Mapping(target = "supervisorId", source = "supervisor.id")
+    @Mapping(target = "password", ignore = true)
     UserDTO toDto(User user);
 
     @Mapping(target = "supervisorId", source = "supervisor.id")
     UserEmployeesDTO toUserEmployeesDto(User user);
 
+    @Mapping(target = "supervisor", source = "supervisorId")
     User toEntity(UserDTO userDTO);
 
     List<UserDTO> toUserDtoList(List<User> users);

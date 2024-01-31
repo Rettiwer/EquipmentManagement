@@ -3,6 +3,7 @@ package com.rettiwer.equipmentmanagement.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rettiwer.equipmentmanagement.authentication.token.Token;
 import com.rettiwer.equipmentmanagement.item.Item;
 import com.rettiwer.equipmentmanagement.user.role.Role;
@@ -38,6 +39,7 @@ public class User implements UserDetails {
 
     @Column(unique = true)
     private String email;
+
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

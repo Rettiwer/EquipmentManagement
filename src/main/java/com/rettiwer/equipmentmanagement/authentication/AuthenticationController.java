@@ -1,5 +1,6 @@
 package com.rettiwer.equipmentmanagement.authentication;
 
+import com.rettiwer.equipmentmanagement.user.UserDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

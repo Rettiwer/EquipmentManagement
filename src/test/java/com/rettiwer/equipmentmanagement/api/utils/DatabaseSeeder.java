@@ -3,6 +3,7 @@ package com.rettiwer.equipmentmanagement.api.utils;
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import com.rettiwer.equipmentmanagement.invoice.InvoiceItemsDTO;
 import com.rettiwer.equipmentmanagement.item.ItemDTO;
+import com.rettiwer.equipmentmanagement.user.UserDTO;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import io.restassured.RestAssured;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -44,6 +45,7 @@ public class DatabaseSeeder {
                 RandomStringUtils.randomAlphabetic(5, 10),
                 RandomStringUtils.randomAlphabetic(10, 15) + "@example.com",
                 "StrongPass!",
-                List.of(new RoleDTO("ROLE_ADMIN")));
+                List.of(new RoleDTO("ROLE_ADMIN")),
+                null);
     }
 }
