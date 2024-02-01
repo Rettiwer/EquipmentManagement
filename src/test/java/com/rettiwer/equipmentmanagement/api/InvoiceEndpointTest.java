@@ -33,7 +33,7 @@ public class InvoiceEndpointTest {
     @Test
     @Order(1)
     void creatInvoice_thenUnauthorized() {
-        InvoiceItemsDTO invoice = DatabaseSeeder.generateInvoice(2, ACCESS_TOKEN, API_ROUTE);
+        InvoiceItemsDTO invoice = DatabaseSeeder.generateInvoice(2, 1, ACCESS_TOKEN, API_ROUTE);
         Response response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(invoice)
@@ -44,7 +44,7 @@ public class InvoiceEndpointTest {
     @Test
     @Order(2)
     void whenInvoiceCreated_returnCreated() {
-        InvoiceItemsDTO invoice = DatabaseSeeder.generateInvoice(2, ACCESS_TOKEN, API_ROUTE);
+        InvoiceItemsDTO invoice = DatabaseSeeder.generateInvoice(2, 1, ACCESS_TOKEN, API_ROUTE);
 
         Response response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

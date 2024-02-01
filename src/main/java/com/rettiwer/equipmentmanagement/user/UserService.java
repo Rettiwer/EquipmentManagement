@@ -1,12 +1,14 @@
 package com.rettiwer.equipmentmanagement.user;
 
 import com.rettiwer.equipmentmanagement.apierror.exception.InsufficientPermissionException;
+import com.rettiwer.equipmentmanagement.apierror.exception.RelationConstraintViolationException;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import com.rettiwer.equipmentmanagement.user.exception.UserHasEmployeesException;
 import com.rettiwer.equipmentmanagement.user.exception.UserHasItemsException;
 import com.rettiwer.equipmentmanagement.user.role.Role;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,6 +64,8 @@ public class UserService {
                 throw new InsufficientPermissionException();
             }
         }
+
+        registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
         var request = userMapper.registerRequestToEntity(registerRequest);
 
@@ -109,10 +114,10 @@ public class UserService {
             throw new InsufficientPermissionException();
 
         if (!toDeleteUser.getEmployees().isEmpty())
-            throw new UserHasEmployeesException();
+            throw new RelationConstraintViolationException("USER_HAS_ASSIGNED_EMPLOYEES_REASSIGN_THEM");
 
         if (!toDeleteUser.getItems().isEmpty())
-            throw new UserHasItemsException();
+            throw new RelationConstraintViolationException("USER_HAS_ASSIGNED_ITEMS_REASSIGN_THEM");
 
         userRepository.delete(toDeleteUser);
     }

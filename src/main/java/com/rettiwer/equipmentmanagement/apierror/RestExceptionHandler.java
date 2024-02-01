@@ -1,12 +1,13 @@
 package com.rettiwer.equipmentmanagement.apierror;
 
 import com.rettiwer.equipmentmanagement.apierror.exception.InsufficientPermissionException;
+import com.rettiwer.equipmentmanagement.apierror.exception.RelationConstraintViolationException;
 import com.rettiwer.equipmentmanagement.user.exception.UserHasEmployeesException;
 import com.rettiwer.equipmentmanagement.user.exception.UserHasItemsException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -136,6 +137,10 @@ public class RestExceptionHandler {
         return buildResponseEntity(new ApiError(INTERNAL_SERVER_ERROR, ex));
     }
 
+    @ExceptionHandler(RelationConstraintViolationException.class)
+    protected ResponseEntity<Object> handleRelationConstraintViolationException(RelationConstraintViolationException ex) {
+            return buildResponseEntity(new ApiError(HttpStatus.CONFLICT, ex.getMessage()));
+    }
 
     /**
      * Handle Exception, handle generic Exception.class

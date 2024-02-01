@@ -16,14 +16,14 @@ import java.util.List;
 
 public class DatabaseSeeder {
 
-    public static InvoiceItemsDTO generateInvoice(int itemsAmount, String ACCESS_TOKEN, String API_ROUTE) {
+    public static InvoiceItemsDTO generateInvoice(int itemsAmount, int ownerId, String accessToken, String apiRoute) {
         List<ItemDTO> items = new ArrayList<>();
         for (int i = 0; i < itemsAmount; i++) {
             items.add(new ItemDTO(
                     RandomStringUtils.randomAlphabetic(10),
                     new BigDecimal(RandomStringUtils.randomNumeric(3)),
                     RandomStringUtils.randomAlphabetic(10, 20),
-                    1));
+                    ownerId));
         }
 
         InvoiceItemsDTO invoiceDTO = new InvoiceItemsDTO(
@@ -33,19 +33,35 @@ public class DatabaseSeeder {
 
         return RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .headers("Authorization", "Bearer " + accessToken)
                 .body(invoiceDTO)
                 .when()
-                .post(API_ROUTE + "/invoices").as(InvoiceItemsDTO.class);
+                .post(apiRoute + "/invoices").as(InvoiceItemsDTO.class);
     }
 
-    public static RegisterRequest createNewUser() {
-        return new RegisterRequest(
-                RandomStringUtils.randomAlphabetic(5, 10),
-                RandomStringUtils.randomAlphabetic(5, 10),
-                RandomStringUtils.randomAlphabetic(10, 15) + "@example.com",
-                "StrongPass!",
-                List.of(new RoleDTO("ROLE_ADMIN")),
-                null);
+    public static UserDTO insertNewUser(List<RoleDTO> roles, Integer supervisorId, String accessToken, String apiRoute) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + accessToken)
+                .body(createNewUser(roles, supervisorId))
+                .post(apiRoute).as(UserDTO.class);
+    }
+
+    public static UserDTO insertNewUser(RegisterRequest request, String accessToken, String apiRoute) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + accessToken)
+                .body(request)
+                .post(apiRoute).as(UserDTO.class);
+    }
+
+    public static RegisterRequest createNewUser(List<RoleDTO> roles, Integer supervisorId) {
+            return new RegisterRequest(
+                    RandomStringUtils.randomAlphabetic(5, 10),
+                    RandomStringUtils.randomAlphabetic(5, 10),
+                    RandomStringUtils.randomAlphabetic(10, 15) + "@example.com",
+                    "StrongPass!",
+                    roles,
+                    supervisorId);
     }
 }
