@@ -50,7 +50,7 @@ public class User implements UserDetails {
     )
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "owner")

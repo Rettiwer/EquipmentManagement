@@ -45,7 +45,7 @@ public class MockAccessTokenExtension implements BeforeEachCallback {
         AuthenticationService service = SpringExtension.getApplicationContext(context)
                 .getBean(AuthenticationService.class);
         var mockAdminUser = DatabaseSeeder
-                .createNewUser(List.of(new RoleDTO("ROLE_ADMIN")), null);
+                .createNewUser(List.of(new RoleDTO("ROLE_ADMIN"), new RoleDTO("ROLE_SUPERVISOR")), null);
         return service.register(mockAdminUser).getAccessToken();
     }
 }

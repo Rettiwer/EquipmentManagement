@@ -7,6 +7,7 @@ import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import com.rettiwer.equipmentmanagement.user.exception.UserHasEmployeesException;
 import com.rettiwer.equipmentmanagement.user.exception.UserHasItemsException;
 import com.rettiwer.equipmentmanagement.user.role.Role;
+import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,12 @@ public class UserService {
                     !registerRequest.getSupervisorId().equals(currentUser.getId())) {
                 throw new InsufficientPermissionException();
             }
+
+            if (registerRequest.getRoles().stream().anyMatch(roleDTO ->
+                    roleDTO.getName().equals(Role.UserRole.ROLE_ADMIN.name) ||
+                            roleDTO.getName().equals(Role.UserRole.ROLE_SUPERVISOR.name))) {
+                throw new InsufficientPermissionException();
+            }
         }
 
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
@@ -81,6 +88,12 @@ public class UserService {
             if (!currentUser.hasRole(Role.UserRole.ROLE_SUPERVISOR) || !userDTO.getSupervisorId().equals(currentUser.getId())) {
                 throw new InsufficientPermissionException();
             }
+
+            if (userDTO.getRoles().stream().anyMatch(roleDTO ->
+                    roleDTO.getName().equals(Role.UserRole.ROLE_ADMIN.name) ||
+                            roleDTO.getName().equals(Role.UserRole.ROLE_SUPERVISOR.name))) {
+                throw new InsufficientPermissionException();
+            }
         }
 
         var request = userMapper.toEntity(userDTO);
@@ -94,10 +107,18 @@ public class UserService {
             if (request.getPassword() != null)
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-            if (request.getSupervisor() != null &&
-                    !Objects.equals(request.getSupervisor().getId(), user.getSupervisor().getId()))
-                user.setSupervisor(userRepository.findById(request.getSupervisor().getId())
-                        .orElseThrow(() -> new EntityNotFoundException("There is no supervisor with this id.")));
+            if (request.getSupervisor() != null) {
+                if (Objects.equals(request.getSupervisor().getId(), user.getId()))
+                    throw new RelationConstraintViolationException("Supervisor cannot be his own superior.");
+
+                var supervisor = userRepository.findById(request.getSupervisor().getId())
+                        .orElseThrow(() -> new EntityNotFoundException("There is no supervisor with this id."));
+
+                if (!supervisor.hasRole(Role.UserRole.ROLE_SUPERVISOR))
+                    throw new RelationConstraintViolationException("Supplied user for supervisor does not have role supervisor.");
+
+                user.setSupervisor(supervisor);
+            }
 
             return userRepository.save(user);
         }).orElseThrow(EntityNotFoundException::new));
@@ -108,10 +129,17 @@ public class UserService {
 
         User toDeleteUser = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
 
-        if (!user.hasRole(Role.UserRole.ROLE_ADMIN) &&
-                (user.hasRole(Role.UserRole.ROLE_SUPERVISOR) &&
-                        toDeleteUser.getSupervisor().getId().equals(user.getId())))
-            throw new InsufficientPermissionException();
+        if (!user.hasRole(Role.UserRole.ROLE_ADMIN)) {
+            if (!user.hasRole(Role.UserRole.ROLE_SUPERVISOR) ||
+                    !toDeleteUser.getSupervisor().getId().equals(user.getId())) {
+                throw new InsufficientPermissionException();
+            }
+        }
+
+//        if (!user.hasRole(Role.UserRole.ROLE_ADMIN) &&
+//                (user.hasRole(Role.UserRole.ROLE_SUPERVISOR) &&
+//                        toDeleteUser.getSupervisor().getId().equals(user.getId())))
+//            throw new InsufficientPermissionException();
 
         if (!toDeleteUser.getEmployees().isEmpty())
             throw new RelationConstraintViolationException("USER_HAS_ASSIGNED_EMPLOYEES_REASSIGN_THEM");

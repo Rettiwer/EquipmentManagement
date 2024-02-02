@@ -2,6 +2,7 @@ package com.rettiwer.equipmentmanagement.user;
 
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

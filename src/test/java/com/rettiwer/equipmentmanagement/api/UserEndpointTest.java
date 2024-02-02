@@ -8,6 +8,7 @@ import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessTokenExtension;
 import com.rettiwer.equipmentmanagement.user.UserDTO;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import io.restassured.RestAssured;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -125,22 +126,71 @@ public class UserEndpointTest {
 
     @Test
     void whenGetSingle_userNotExists_returnsEntityNotFound() {
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .get(API_ROUTE_USERS + "/9999");
 
-    }
-
-    @Test
-    void whenGetSingle_userIsAdmin_returnsUser() {
-
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
     }
 
     @Test
     void whenGetSingle_andItsNotOwnEmployee_returnsInsufficientPermissionsException() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null);
 
+        DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String employeeAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .getAccessToken();
+
+        //User 1 is ADMIN from mocked token
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + employeeAccessToken)
+                .get(API_ROUTE_USERS + "/1");
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
     }
 
     @Test
     void whenGetSingle_andUseOwnId_returnItself() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null);
 
+        var employee = DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String employeeAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .getAccessToken();
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + employeeAccessToken)
+                .get(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        assertEquals(employeeRequest.getFirstname(), response.jsonPath().get("firstname"));
+    }
+
+    @Test
+    void whenGetSingle_userIsAdmin_returnsUser() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null);
+
+        var employee = DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .get(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        assertEquals(employeeRequest.getFirstname(), response.jsonPath().get("firstname"));
     }
 
     /*
@@ -151,37 +201,131 @@ public class UserEndpointTest {
 
     @Test
     void createEmployee_userIsEmployee_thenThrowInsufficientPermissionsException() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null);
 
+        DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String employeeAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .getAccessToken();
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + employeeAccessToken)
+                .body(DatabaseSeeder.createNewUser(
+                        List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                        null))
+                .post(API_ROUTE_USERS);
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
     }
 
     @Test
     void createEmployee_userIsSupervisor_whenTriesAssignToOtherSupervisor_thenThrowInsufficientPermissionsException() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null);
 
+        DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        //Tries to assign mocked admin
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .body(DatabaseSeeder.createNewUser(
+                        List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                        1))
+                .post(API_ROUTE_USERS);
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
     }
 
     @Test
     void createEmployee_userIsSupervisor_whenTriesAssignRoleAdmin_thenThrowInsufficientPermissionsException() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null);
 
+        var supervisor = DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .body(DatabaseSeeder.createNewUser(
+                        List.of(new RoleDTO("ROLE_ADMIN")),
+                        supervisor.getId()))
+                .post(API_ROUTE_USERS);
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
     }
 
     @Test
-    void createEmployee_emptyBody_thenValidationError() {
+    void createEmployee_emptyBody_thenBadRequest() {
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .post(API_ROUTE_USERS);
 
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
     }
 
     @Test
     void createEmployee_withNotExistingRole_thenValidationError() {
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(DatabaseSeeder.createNewUser(
+                        List.of(new RoleDTO("NOT_EXISTING_ROLE")),
+                        null))
+                .post(API_ROUTE_USERS);
 
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
     }
 
     @Test
     void createEmployee_userIsSupervisor_thenSuccess() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null);
 
+        var supervisor = DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .body(DatabaseSeeder.createNewUser(
+                        List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                        supervisor.getId()))
+                .post(API_ROUTE_USERS);
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatusCode());
     }
 
     @Test
     void createEmployee_userIsAdmin_thenSuccess() {
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(DatabaseSeeder.createNewUser(
+                        List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                        1))
+                .post(API_ROUTE_USERS);
 
+        assertEquals(HttpStatus.CREATED.value(), response.getStatusCode());
     }
 
     /*
@@ -191,38 +335,214 @@ public class UserEndpointTest {
      */
 
     @Test
-    void updateEmployee_userIsEmployee_thenThrowInsufficientPermissionsException() {
+    void updateEmployee_emptyBody_thenBadRequest() {
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .put(API_ROUTE_USERS + "/1");
 
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
+    }
+
+    @Test
+    void updateEmployee_whichIsNotExisting_thenThrowEntityNotFoundException() {
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(DatabaseSeeder.createNewUser(
+                        List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                        null))
+                .put(API_ROUTE_USERS + "/99999");
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
+    }
+
+    @Test
+    void updateEmployee_userIsEmployee_thenThrowInsufficientPermissionsException() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null);
+
+        var employee = DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String employeeAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .getAccessToken();
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + employeeAccessToken)
+                .body(employeeRequest)
+                .put(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
     }
 
     @Test
     void updateEmployee_userIsSupervisor_whenTriesAssignToOtherSupervisor_thenThrowInsufficientPermissionsException() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null);
 
+        var supervisor = DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                supervisor.getId(), ACCESS_TOKEN, API_ROUTE_USERS);
+
+        //Tries to change supervisor to mocked admin
+        employee.setSupervisorId(1);
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .body(employee)
+                .put(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+    }
+
+    @Test
+    void updateEmployee_userIsSupervisor_whenTriesAssignSupervisorAsOneself_thenConflict() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null);
+
+        var supervisor = DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        supervisor.setSupervisorId(supervisor.getId());
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .body(supervisor)
+                .put(API_ROUTE_USERS + "/" + supervisor.getId());
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+    }
+
+    @Test
+    void updateEmployee_userIsSupervisor_whenTriesAssignSupervisorUserWithoutRole_thenConflict() {
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        employee.setRoles(null);
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(employee)
+                .put(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
     }
 
     @Test
     void updateEmployee_userIsSupervisor_whenTriesAssignRoleAdmin_thenThrowInsufficientPermissionsException() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null);
 
+        var supervisor = DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                supervisor.getId(), ACCESS_TOKEN, API_ROUTE_USERS);
+
+        employee.setRoles(List.of(new RoleDTO("ROLE_ADMIN")));
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .body(employee)
+                .put(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
     }
 
     @Test
     void updateEmployee_emptyBody_thenValidationError() {
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null, ACCESS_TOKEN, API_ROUTE_USERS);
 
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .put(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
     }
 
     @Test
     void updateEmployee_withNotExistingRole_thenValidationError() {
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null, ACCESS_TOKEN, API_ROUTE_USERS);
 
+        employee.setRoles(List.of(new RoleDTO("NOT_EXISTING_ROLE")));
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(employee)
+                .put(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
     }
 
     @Test
     void updateEmployee_invalidUserId_thenNotFound() {
+        var employee = DatabaseSeeder.createNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null);
 
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(employee)
+                .put(API_ROUTE_USERS + "/9999");
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
     }
 
     @Test
     void updateEmployee_userIsSupervisor_thenSuccess() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null);
 
+        var supervisor = DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                supervisor.getId(), ACCESS_TOKEN, API_ROUTE_USERS);
+
+        employee.setEmail("new.email@example.com");
+        employee.setFirstname("Newfirstname");
+        employee.setLastname("Newlastname");
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .body(employee)
+                .put(API_ROUTE_USERS + "/" + employee.getId());
+
+        var employeeResponse = response.as(UserDTO.class);
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        assertEquals(employee.getEmail(), employeeResponse.getEmail());
+        assertEquals(employee.getFirstname(), employeeResponse.getFirstname());
+        assertEquals(employee.getLastname(), employeeResponse.getLastname());
     }
 
     /*
@@ -233,151 +553,88 @@ public class UserEndpointTest {
 
     @Test
     void deleteEmployee_userIsEmployee_thenThrowInsufficientPermissionsException() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null);
 
+        var employee = DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String employeeAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .getAccessToken();
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + employeeAccessToken)
+                .delete(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
     }
 
     @Test
     void deleteEmployee_userIsSupervisor_whenTriesDeleteNotOwnEmployee_thenThrowInsufficientPermissionsException() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null);
 
+        DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                1, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .delete(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
     }
 
     @Test
     void deleteEmployee_employeeHasItems_thenRelationConstraintViolationException() {
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null, ACCESS_TOKEN, API_ROUTE_USERS);
 
+        DatabaseSeeder.generateInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE);
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .delete(API_ROUTE_USERS + "/" + employee.getId());
+
+        assertEquals(HttpStatus.CONFLICT.value(), response.getStatusCode());
     }
 
     @Test
-    void deleteEmployee_employeeHasEmployees_thenRelationConstraintViolationException() {
+    void deleteEmployee_supervisorHasEmployees_thenRelationConstraintViolationException() {
+        var supervisor = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null, ACCESS_TOKEN, API_ROUTE_USERS);
 
+        DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                supervisor.getId(), ACCESS_TOKEN, API_ROUTE_USERS);
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .delete(API_ROUTE_USERS + "/" + supervisor.getId());
+
+        assertEquals(HttpStatus.CONFLICT.value(), response.getStatusCode());
     }
 
     @Test
     void deleteEmployee_thenSuccess() {
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                null, ACCESS_TOKEN, API_ROUTE_USERS);
 
-    }
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .delete(API_ROUTE_USERS + "/" + employee.getId());
 
-    @Test
-    @Order(2)
-    void createSupervisorWithEmployee_thenReturnSupervisorWithEmployees() {
-//        var supervisorRequest = DatabaseSeeder.createNewUser();
-//        supervisorRequest.setRoles(List.of(new RoleDTO("ROLE_SUPERVISOR")));
-//
-//        //Create supervisor
-//        var response = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .body(supervisorRequest)
-//                .post(API_ROUTE + "/users").as(UserDTO.class);
-//
-//        var employeeRequest = DatabaseSeeder.createNewUser();
-//        employeeRequest.setRoles(List.of(new RoleDTO("ROLE_EMPLOYEE")));
-//        employeeRequest.setSupervisorId(response.getId());
-//
-//        //Create new employee with supervisor
-//        RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .body(employeeRequest)
-//                .post(API_ROUTE + "/users");
-//
-//        //Get supervisor with employees
-//        var getSupervisor = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .get(API_ROUTE + "/users/" + response.getId()).as(UserDTO.class);
-//
-//        assertEquals(HttpStatus.OK.value(), HttpStatus.OK.value());
-//        assertNull(response.getEmployees());
-//        assertNotNull(getSupervisor.getEmployees());
-    }
-
-    @Test
-    @Order(3)
-    void createEmployee_WithoutPermissions_thenReturnInsufficientPermissionException() {
-//        var employeeRequest = DatabaseSeeder.createNewUser();
-//        employeeRequest.setRoles(List.of(new RoleDTO("ROLE_EMPLOYEE")));
-//
-//        String newAccessToken = authenticationService.register(employeeRequest).getAccessToken();
-//
-//        var secondEmployeeRequest = DatabaseSeeder.createNewUser();
-//
-//        var response = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + newAccessToken)
-//                .body(secondEmployeeRequest)
-//                .post(API_ROUTE + "/users");
-//
-//        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
-    }
-
-    @Test
-    @Order(4)
-    void createEmployee_thenUpdate() {
-//        var employeeRequest = DatabaseSeeder.createNewUser();
-//        employeeRequest.setRoles(List.of(new RoleDTO("ROLE_EMPLOYEE")));
-//        employeeRequest.setSupervisorId(1);
-//
-//        var response = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .body(employeeRequest)
-//                .post(API_ROUTE_USERS).as(UserDTO.class);
-//
-//        response.setFirstname("TESTNAME");
-//        response.getRoles().add(new RoleDTO("ROLE_ADMIN"));
-//
-//        var employee2 = DatabaseSeeder.createNewUser();
-//        employee2.setRoles(List.of(new RoleDTO("ROLE_SUPERVISOR")));
-//        var secondSupervisor = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .body(employee2)
-//                .post(API_ROUTE_USERS).as(UserDTO.class);
-//
-//
-//        var updateResponse = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .body(response)
-//                .put(API_ROUTE_USERS + "/" + response.getId());
-//
-//        assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
-//        assertEquals(response.getFirstname(), updateResponse.as(UserDTO.class).getFirstname());
-    }
-
-    @Test
-    @Order(5)
-    void deleteEmployee_thatNotExists_thenNotFound() {
-//        var deleteRequest = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .delete(API_ROUTE_USERS + "/" + 9999);
-//
-//        assertEquals(HttpStatus.NOT_FOUND.value(), deleteRequest.getStatusCode());
-    }
-
-    @Test
-    @Order(5)
-    void createEmployee_thenDelete() {
-//        var employeeRequest = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .body(DatabaseSeeder.createNewUser())
-//                .post(API_ROUTE_USERS).as(UserDTO.class);
-//
-//        DatabaseSeeder.generateInvoice(1, employeeRequest.getId(), ACCESS_TOKEN, API_ROUTE);
-//
-//        var deleteRequest = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .delete(API_ROUTE_USERS + "/" + employeeRequest.getId());
-//
-//        var getResponse = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
-//                .get(API_ROUTE_USERS + "/" + employeeRequest.getId());
-//
-//        assertEquals(HttpStatus.OK.value(), deleteRequest.getStatusCode());
-//        assertEquals(HttpStatus.NOT_FOUND.value(), getResponse.getStatusCode());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
     }
 }
