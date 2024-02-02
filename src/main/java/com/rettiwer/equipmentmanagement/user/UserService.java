@@ -136,11 +136,6 @@ public class UserService {
             }
         }
 
-//        if (!user.hasRole(Role.UserRole.ROLE_ADMIN) &&
-//                (user.hasRole(Role.UserRole.ROLE_SUPERVISOR) &&
-//                        toDeleteUser.getSupervisor().getId().equals(user.getId())))
-//            throw new InsufficientPermissionException();
-
         if (!toDeleteUser.getEmployees().isEmpty())
             throw new RelationConstraintViolationException("USER_HAS_ASSIGNED_EMPLOYEES_REASSIGN_THEM");
 
