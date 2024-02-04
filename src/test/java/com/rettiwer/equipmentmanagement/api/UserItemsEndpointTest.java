@@ -122,4 +122,109 @@ public class UserItemsEndpointTest {
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
         assertEquals(1, response.as(UserItemsDTO[].class).length);
     }
+
+    @Test
+    void getSingleUserItems_asAdmin_thenReturnAllUserItems() {
+        var supervisor = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        DatabaseSeeder.generateInvoice(5, supervisor.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+
+        var response = RestAssured.given()
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get(API_ROUTE_USERS + "/" + supervisor.getId() + "/items");
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        assertEquals(5, response.as(UserItemsDTO.class).getItems().size());
+    }
+
+    @Test
+    void getSingleUserItemsFromOtherSupervisor_asSupervisor_returnsInsufficientPermissionsException() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")), null);
+
+        DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                1, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        DatabaseSeeder.generateInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+
+        var response = RestAssured.given()
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get(API_ROUTE_USERS + "/" + employee.getId() + "/items");
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+    }
+    @Test
+    void getSingleUserItems_asSupervisor_thenReturnOwnAndEmployeesUserItems() {
+        var supervisorRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_SUPERVISOR")), null);
+
+        var supervisor = DatabaseSeeder.insertNewUser(supervisorRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String supervisorAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
+                .getAccessToken();
+
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                supervisor.getId(), supervisorAccessToken, API_ROUTE_USERS);
+
+        DatabaseSeeder.generateInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+
+        var response = RestAssured.given()
+                .headers("Authorization", "Bearer " + supervisorAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get(API_ROUTE_USERS + "/" + employee.getId() + "/items");
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        assertEquals(2, response.as(UserItemsDTO.class).getItems().size());
+    }
+
+    @Test
+    void getSingleUserItemsFromOtherUser_asEmployee_returnsInsufficientPermissionsException() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")), null);
+
+        DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String employeeAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .getAccessToken();
+
+        var response = RestAssured.given()
+                .headers("Authorization", "Bearer " + employeeAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get(API_ROUTE_USERS + "/" + 1 + "/items");
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+    }
+
+    @Test
+    void getSingleUserItems_asEmployee_thenReturnOwnUserItems() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")), null);
+
+        var employee = DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        String employeeAccessToken = authenticationService
+                .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .getAccessToken();
+
+        DatabaseSeeder.generateInvoice(5, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+
+        var response = RestAssured.given()
+                .headers("Authorization", "Bearer " + employeeAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get(API_ROUTE_USERS + "/" + employee.getId() + "/items");
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        assertEquals(5, response.as(UserItemsDTO.class).getItems().size());
+    }
 }
