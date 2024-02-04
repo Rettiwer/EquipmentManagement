@@ -18,6 +18,6 @@ public class UserItemsController {
 
     @GetMapping("/{userId}/items")
     public ResponseEntity<?> singleUser(@PathVariable Integer userId) {
-        return new ResponseEntity<>(itemService.getAllUserItemsById(userId), HttpStatus.OK);
+        return new ResponseEntity<>(itemService.getSingleUserItemsById(userId), HttpStatus.OK);
     }
 }
