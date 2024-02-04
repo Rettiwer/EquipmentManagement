@@ -36,7 +36,7 @@ public class DatabaseSeeder {
                 .headers("Authorization", "Bearer " + accessToken)
                 .body(invoiceDTO)
                 .when()
-                .post(apiRoute + "/invoices").as(InvoiceItemsDTO.class);
+                .post(apiRoute).as(InvoiceItemsDTO.class);
     }
 
     public static UserDTO insertNewUser(List<RoleDTO> roles, Integer supervisorId, String accessToken, String apiRoute) {

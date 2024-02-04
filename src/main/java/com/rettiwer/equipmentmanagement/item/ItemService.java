@@ -1,48 +1,52 @@
 package com.rettiwer.equipmentmanagement.item;
 
-import com.rettiwer.equipmentmanagement.invoice.InvoiceDTO;
+import com.rettiwer.equipmentmanagement.apierror.exception.InsufficientPermissionException;
+import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.invoice.InvoiceRepository;
+import com.rettiwer.equipmentmanagement.user.User;
+import com.rettiwer.equipmentmanagement.user.UserMapper;
+import com.rettiwer.equipmentmanagement.user.UserRepository;
+import com.rettiwer.equipmentmanagement.user.role.Role;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
-    public final ItemRepository itemRepository;
-    public final InvoiceRepository invoiceRepository;
+    public final UserRepository userRepository;
+    private final AuthenticationService authService;
     public final ItemMapper itemMapper;
 
-    public List<InvoiceDTO> getAll() {
-        return null;
+    public List<UserItemsDTO> getAllUserItems() {
+        User user = authService.getCurrentUser();
+
+        if (user.hasRole(Role.UserRole.ROLE_ADMIN))
+            return itemMapper.toUserItemsDtoList(userRepository.findAll());
+
+        List<User> userItems = new ArrayList<>();
+        userItems.add(user);
+        userItems.addAll(user.getEmployees());
+
+        return itemMapper.toUserItemsDtoList(userItems);
     }
 
-    public ItemDTO getItemById(Long id) {
-        return itemMapper.toDto(itemRepository.findById(id).orElseThrow());
-    }
+    public UserItemsDTO getAllUserItemsById(Integer userId) {
+        User currentUser = authService.getCurrentUser();
+        User requestedUser = userRepository.findById(userId)
+                .orElseThrow(EntityNotFoundException::new);
 
-    public ItemDTO insert(ItemDTO itemDTO) {
-        Item item = itemMapper.toEntity(itemDTO);
-        return itemMapper.toDto(itemRepository.save(item));
-    }
+        if (!currentUser.hasRole(Role.UserRole.ROLE_ADMIN) ||
+                !currentUser.getId().equals(userId) ||
+                currentUser.getEmployees().stream().noneMatch(employee -> employee.getId().equals(userId)))
+            throw new InsufficientPermissionException();
 
-    public ItemDTO replaceOrInsert(ItemDTO itemDTO, @Nullable Item item) {
-        if (item != null)
-            itemDTO.setId(null);
-
-       return itemMapper.toDto(
-                itemRepository.save(itemMapper.toEntity(itemDTO)));
-    }
-
-    public HttpStatus delete(Item item) {
-        if (item != null) {
-            itemRepository.delete(item);
-            return HttpStatus.OK;
-        }
-        return HttpStatus.NOT_FOUND;
+        return itemMapper.toUserItemsDto(requestedUser);
     }
 }

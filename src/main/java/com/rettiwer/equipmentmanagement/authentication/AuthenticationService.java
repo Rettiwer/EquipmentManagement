@@ -8,6 +8,7 @@ import com.rettiwer.equipmentmanagement.user.User;
 import com.rettiwer.equipmentmanagement.user.UserDTO;
 import com.rettiwer.equipmentmanagement.user.UserMapper;
 import com.rettiwer.equipmentmanagement.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -66,9 +67,9 @@ public class AuthenticationService {
                     .build();
     }
 
-    public Optional<User> getCurrentUser() {
+    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findByEmail(authentication.getName());
+        return userRepository.findByEmail(authentication.getName()).orElseThrow(EntityNotFoundException::new);
     }
 
     private void saveUserToken(User user, String jwtToken) {

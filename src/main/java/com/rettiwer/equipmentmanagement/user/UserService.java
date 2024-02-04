@@ -4,25 +4,16 @@ import com.rettiwer.equipmentmanagement.apierror.exception.InsufficientPermissio
 import com.rettiwer.equipmentmanagement.apierror.exception.RelationConstraintViolationException;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
-import com.rettiwer.equipmentmanagement.user.exception.UserHasEmployeesException;
-import com.rettiwer.equipmentmanagement.user.exception.UserHasItemsException;
 import com.rettiwer.equipmentmanagement.user.role.Role;
-import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.Nullable;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -33,19 +24,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public UserDTO getUserById(Integer id) {
-        User user = authService.getCurrentUser().orElseThrow();
+    public UserDTO getById(Integer id) {
+        User user = authService.getCurrentUser();
 
         if (!user.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)) &&
                 !Objects.equals(user.getId(), id)) {
             throw new InsufficientPermissionException();
         }
 
-        return userMapper.toDto(userRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+        return userMapper.toUserDto(userRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     public List<UserEmployeesDTO> getAllUsers() {
-        User user = authService.getCurrentUser().orElseThrow();
+        User user = authService.getCurrentUser();
 
         if (user.hasRole(Role.UserRole.ROLE_ADMIN)) {
             return userMapper.toUserEmployeesDtoList(userRepository.findAll());
@@ -56,7 +47,7 @@ public class UserService {
 
     @Transactional
     public UserDTO create(RegisterRequest registerRequest) {
-        User currentUser = authService.getCurrentUser().orElseThrow();
+        User currentUser = authService.getCurrentUser();
 
         //Only ROLE_ADMIN can insert employee for different supervisor
         if (!currentUser.hasRole(Role.UserRole.ROLE_ADMIN)) {
@@ -76,12 +67,12 @@ public class UserService {
 
         var request = userMapper.registerRequestToEntity(registerRequest);
 
-        return userMapper.toDto(userRepository.save(request));
+        return userMapper.toUserDto(userRepository.save(request));
     }
 
     @Transactional
     public UserDTO replace(UserDTO userDTO, Integer userId) {
-        User currentUser = authService.getCurrentUser().orElseThrow();
+        User currentUser = authService.getCurrentUser();
 
         //Only ROLE_ADMIN can change employee for different supervisor
         if (!currentUser.hasRole(Role.UserRole.ROLE_ADMIN)) {
@@ -96,28 +87,24 @@ public class UserService {
             }
         }
 
-        var request = userMapper.toEntity(userDTO);
+        return userMapper.toUserDto(userRepository.findById(userId).map(user -> {
+            User updatedUser = userMapper.updateEntity(userDTO, user);
 
-        return userMapper.toDto(userRepository.findById(userId).map(user -> {
-            user.setFirstname(request.getFirstname());
-            user.setLastname(request.getLastname());
-            user.setEmail(request.getEmail());
-            user.setRoles(request.getRoles());
+            if (updatedUser.getPassword() != null) {
+                updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
 
-            if (request.getPassword() != null)
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-            if (request.getSupervisor() != null) {
-                if (Objects.equals(request.getSupervisor().getId(), user.getId()))
+            if (updatedUser.getSupervisor() != null) {
+                if (Objects.equals(updatedUser.getSupervisor().getId(), user.getId()))
                     throw new RelationConstraintViolationException("Supervisor cannot be his own superior.");
 
-                var supervisor = userRepository.findById(request.getSupervisor().getId())
+                var supervisor = userRepository.findById(updatedUser.getSupervisor().getId())
                         .orElseThrow(() -> new EntityNotFoundException("There is no supervisor with this id."));
 
                 if (!supervisor.hasRole(Role.UserRole.ROLE_SUPERVISOR))
                     throw new RelationConstraintViolationException("Supplied user for supervisor does not have role supervisor.");
 
-                user.setSupervisor(supervisor);
+                updatedUser.setSupervisor(supervisor);
             }
 
             return userRepository.save(user);
@@ -125,7 +112,7 @@ public class UserService {
     }
 
     public void delete(Integer userId) {
-        User user = authService.getCurrentUser().orElseThrow();
+        User user = authService.getCurrentUser();
 
         User toDeleteUser = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
 

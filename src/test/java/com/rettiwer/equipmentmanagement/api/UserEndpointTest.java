@@ -34,10 +34,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor
 @ExtendWith(MockAccessTokenExtension.class)
 public class UserEndpointTest {
-    @Value("${application.api.route}")
-    private String API_ROUTE;
     @Value("${application.api.route}/users")
     private String API_ROUTE_USERS;
+
+    @Value("${application.api.route}/invoices")
+    private String API_ROUTE_INVOICES;
 
     @MockAccessToken
     private String ACCESS_TOKEN;
@@ -545,6 +546,33 @@ public class UserEndpointTest {
         assertEquals(employee.getLastname(), employeeResponse.getLastname());
     }
 
+    @Test
+    void updateEmployee_userIsAdmin_thenSuccess() {
+        var supervisor = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_SUPERVISOR")),
+                null, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
+                supervisor.getId(), ACCESS_TOKEN, API_ROUTE_USERS);
+
+        employee.setEmail("new.email.admin@example.com");
+        employee.setFirstname("Newfirstname");
+        employee.setLastname("Newlastname");
+        employee.setSupervisorId(1);
+
+        var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + ACCESS_TOKEN)
+                .body(employee)
+                .put(API_ROUTE_USERS + "/" + employee.getId());
+
+        var employeeResponse = response.as(UserDTO.class);
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        assertEquals(employee.getEmail(), employeeResponse.getEmail());
+        assertEquals(employee.getFirstname(), employeeResponse.getFirstname());
+        assertEquals(employee.getLastname(), employeeResponse.getLastname());
+        assertEquals(employee.getSupervisorId(), employeeResponse.getSupervisorId());
+    }
+
     /*
 
         UserController delete tests
@@ -599,7 +627,7 @@ public class UserEndpointTest {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 
-        DatabaseSeeder.generateInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE);
+        DatabaseSeeder.generateInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICES);
 
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

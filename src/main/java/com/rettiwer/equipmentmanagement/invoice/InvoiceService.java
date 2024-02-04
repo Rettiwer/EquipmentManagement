@@ -1,11 +1,11 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
+import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.user.User;
-import com.rettiwer.equipmentmanagement.user.UserDTO;
+import com.rettiwer.equipmentmanagement.item.UserItemsDTO;
 import com.rettiwer.equipmentmanagement.user.UserRepository;
 import com.rettiwer.equipmentmanagement.user.role.Role;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,35 +17,40 @@ public class InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final UserRepository userRepository;
     private final InvoiceMapper invoiceMapper;
+    private final AuthenticationService authService;
 
-    public List<InvoiceItemsDTO> getAll() {
+    public List<UserItemsDTO> getAll() {
+        User user = authService.getCurrentUser();
+
+        if (user.hasRole(Role.UserRole.ROLE_ADMIN))
+            invoiceMapper.toListDtoWithItems(invoiceRepository.findAll());
+
+        return null;
+    }
+
+    public List<InvoiceItemsDTO> getById(Integer invoiceId) {
         return invoiceMapper.toListDtoWithItems(invoiceRepository.findAll());
     }
 
-    public InvoiceDTO store(InvoiceDTO invoiceDTO) {
-        Invoice invoice = invoiceMapper.toEntity(invoiceDTO);
-        return invoiceMapper.toDto(invoiceRepository.save(invoice));
-    }
-
-//    public List<UserDTO> getAllUsersWithItems() {
-//        User user = authService.getCurrentUser().orElseThrow();
-//
-//        if (user.hasRole(Role.UserRole.ROLE_ADMIN))
-//            return userMapper.toUserDtoList(userRepository.findAll());
-//
-//
-//        if (user.hasRole(Role.UserRole.ROLE_SUPERVISOR))
-//            return userMapper.toUserDtoList(userRepository.findAll());
-//
-//        return List.of(userMapper.toDto(user));
-//    }
-
     @Transactional
-    public InvoiceItemsDTO createWithItems(InvoiceItemsDTO invoiceItemsDTO) {
+    public InvoiceItemsDTO create(InvoiceItemsDTO invoiceItemsDTO) {
         Invoice invoice = invoiceMapper.toEntityWithItems(invoiceItemsDTO);
 
         invoice.getItems().forEach(item -> item.setInvoice(invoice));
 
         return invoiceMapper.toDtoWithItems(invoiceRepository.save(invoice));
+    }
+
+    @Transactional
+    public InvoiceItemsDTO replace(InvoiceItemsDTO invoiceItemsDTO, Integer invoiceId) {
+        Invoice invoice = invoiceMapper.toEntityWithItems(invoiceItemsDTO);
+
+        invoice.getItems().forEach(item -> item.setInvoice(invoice));
+
+        return invoiceMapper.toDtoWithItems(invoiceRepository.save(invoice));
+    }
+
+    public void delete(Integer invoiceId) {
+
     }
 }

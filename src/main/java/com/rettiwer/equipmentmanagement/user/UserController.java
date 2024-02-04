@@ -2,11 +2,9 @@ package com.rettiwer.equipmentmanagement.user;
 
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,7 +20,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> single(@PathVariable Integer id) {
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
@@ -36,7 +34,7 @@ public class UserController {
     }
 
     @DeleteMapping(value =  "/{id}")
-    public ResponseEntity<?> delete(@Nullable @PathVariable("id") Integer userId) {
+    public ResponseEntity<?> delete(@PathVariable("id") Integer userId) {
         userService.delete(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

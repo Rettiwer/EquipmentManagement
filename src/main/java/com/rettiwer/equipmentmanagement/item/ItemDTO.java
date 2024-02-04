@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemDTO {
     private Long id;
 
