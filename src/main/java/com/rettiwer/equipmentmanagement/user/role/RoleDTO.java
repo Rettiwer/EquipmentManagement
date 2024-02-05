@@ -1,6 +1,6 @@
 package com.rettiwer.equipmentmanagement.user.role;
 
-import com.rettiwer.equipmentmanagement.user.role.validator.ValidUserRole;
+import com.rettiwer.equipmentmanagement.user.role.validator.ValidateUserRole;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -11,6 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 public class RoleDTO {
     @NotNull
-    @ValidUserRole
+    @ValidateUserRole
     private String name;
 }

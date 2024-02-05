@@ -16,27 +16,49 @@ import java.util.List;
 
 public class DatabaseSeeder {
 
-    public static InvoiceItemsDTO generateInvoice(int itemsAmount, int ownerId, String accessToken, String apiRoute) {
-        List<ItemDTO> items = new ArrayList<>();
-        for (int i = 0; i < itemsAmount; i++) {
-            items.add(new ItemDTO(
-                    RandomStringUtils.randomAlphabetic(10),
-                    new BigDecimal(RandomStringUtils.randomNumeric(3)),
-                    RandomStringUtils.randomAlphabetic(10, 20),
-                    ownerId));
-        }
-
-        InvoiceItemsDTO invoiceDTO = new InvoiceItemsDTO(
-                "15/10/2022",
-                LocalDate.now(),
-                items);
-
+    public static InvoiceItemsDTO insertInvoice(int itemsAmount, int ownerId, String accessToken, String apiRoute) {
         return RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers("Authorization", "Bearer " + accessToken)
-                .body(invoiceDTO)
+                .body(createNewInvoice(itemsAmount, ownerId))
                 .when()
                 .post(apiRoute).as(InvoiceItemsDTO.class);
+    }
+
+    public static InvoiceItemsDTO insertInvoice(InvoiceItemsDTO invoiceItemsDTO, String accessToken, String apiRoute) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers("Authorization", "Bearer " + accessToken)
+                .body(invoiceItemsDTO)
+                .when()
+                .post(apiRoute).as(InvoiceItemsDTO.class);
+    }
+
+    public static InvoiceItemsDTO createNewInvoice(int itemsAmount, int ownerId) {
+        List<ItemDTO> items = new ArrayList<>();
+        for (int i = 0; i < itemsAmount; i++) {
+            items.add(createNewItem(ownerId));
+        }
+
+        return new InvoiceItemsDTO(
+                "15/10/2022",
+                LocalDate.now(),
+                items);
+    }
+
+    public static InvoiceItemsDTO createNewInvoice(List<ItemDTO> items) {
+        return new InvoiceItemsDTO(
+                "15/10/2022",
+                LocalDate.now(),
+                items);
+    }
+
+    public static ItemDTO createNewItem(int ownerId) {
+        return new ItemDTO(
+                    RandomStringUtils.randomAlphabetic(10),
+                    new BigDecimal(RandomStringUtils.randomNumeric(3)),
+                    RandomStringUtils.randomAlphabetic(10, 20),
+                    ownerId);
     }
 
     public static UserDTO insertNewUser(List<RoleDTO> roles, Integer supervisorId, String accessToken, String apiRoute) {

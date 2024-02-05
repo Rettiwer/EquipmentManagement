@@ -4,9 +4,9 @@ import com.rettiwer.equipmentmanagement.user.role.Role;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class UserRoleValidator implements ConstraintValidator<ValidUserRole, String> {
+public class UserRoleValidator implements ConstraintValidator<ValidateUserRole, String> {
     @Override
-    public void initialize(ValidUserRole constraintAnnotation) {
+    public void initialize(ValidateUserRole constraintAnnotation) {
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessTokenExtension;
 import com.rettiwer.equipmentmanagement.user.UserDTO;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import io.restassured.RestAssured;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -20,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +51,7 @@ public class UserEndpointTest {
      */
 
     @Test
-    void whenGetAll_userIsAdmin_returnsAllUsersWithEmployees() {
+    void whenGetAll_userIsAdmin_thenReturnAllUsersWithEmployees() {
         var user = DatabaseSeeder.insertNewUser(
                 List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
@@ -68,7 +66,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void whenGetAll_userIsSupervisor_returnsItselfAndEmployees() {
+    void whenGetAll_userIsSupervisor_thenItselfAndEmployees() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -98,7 +96,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void whenGetAll_userIsEmployee_returnsItself() {
+    void whenGetAll_userIsEmployee_thenReturnItself() {
         var employeeRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null);
@@ -126,7 +124,7 @@ public class UserEndpointTest {
      */
 
     @Test
-    void whenGetSingle_userNotExists_returnsEntityNotFound() {
+    void whenGetSingle_userNotExists_thenEntityNotFound() {
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
@@ -136,7 +134,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void whenGetSingle_andItsNotOwnEmployee_returnsInsufficientPermissionsException() {
+    void whenGetSingle_andItsNotOwnEmployee_thenInsufficientPermissionsException() {
         var employeeRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null);
@@ -157,7 +155,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void whenGetSingle_andUseOwnId_returnItself() {
+    void whenGetSingle_andUseOwnId_thenReturnItself() {
         var employeeRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null);
@@ -178,7 +176,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void whenGetSingle_userIsAdmin_returnsUser() {
+    void whenGetSingle_userIsAdmin_thenReturnUser() {
         var employeeRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null);
@@ -201,7 +199,7 @@ public class UserEndpointTest {
      */
 
     @Test
-    void createEmployee_userIsEmployee_thenThrowInsufficientPermissionsException() {
+    void createEmployee_userIsEmployee_thenInsufficientPermissionsException() {
         var employeeRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null);
@@ -224,7 +222,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void createEmployee_userIsSupervisor_whenTriesAssignToOtherSupervisor_thenThrowInsufficientPermissionsException() {
+    void createEmployee_userIsSupervisor_whenTriesAssignToOtherSupervisor_thenInsufficientPermissionsException() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -248,7 +246,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void createEmployee_userIsSupervisor_whenTriesAssignRoleAdmin_thenThrowInsufficientPermissionsException() {
+    void createEmployee_userIsSupervisor_whenTriesAssignRoleAdmin_thenInsufficientPermissionsException() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -281,7 +279,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void createEmployee_withNotExistingRole_thenValidationError() {
+    void createEmployee_withNotExistingRole_thenValidationException() {
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
@@ -294,7 +292,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void createEmployee_userIsSupervisor_thenSuccess() {
+    void createEmployee_userIsSupervisor_thenReturnSuccess() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -317,7 +315,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void createEmployee_userIsAdmin_thenSuccess() {
+    void createEmployee_userIsAdmin_thenReturnSuccess() {
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
@@ -336,7 +334,7 @@ public class UserEndpointTest {
      */
 
     @Test
-    void updateEmployee_emptyBody_thenBadRequest() {
+    void updateEmployee_emptyBody_thenBadRequestException() {
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
@@ -346,7 +344,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_whichIsNotExisting_thenThrowEntityNotFoundException() {
+    void updateEmployee_whichIsNotExisting_thenEntityNotFoundException() {
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
@@ -359,7 +357,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_userIsEmployee_thenThrowInsufficientPermissionsException() {
+    void updateEmployee_userIsEmployee_thenInsufficientPermissionsException() {
         var employeeRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null);
@@ -380,7 +378,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_userIsSupervisor_whenTriesAssignToOtherSupervisor_thenThrowInsufficientPermissionsException() {
+    void updateEmployee_userIsSupervisor_whenTriesAssignToOtherSupervisor_thenInsufficientPermissionsException() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -407,7 +405,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_userIsSupervisor_whenTriesAssignSupervisorAsOneself_thenConflict() {
+    void updateEmployee_userIsSupervisor_whenTriesAssignSupervisorAsOneself_thenConflictException() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -430,7 +428,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_userIsSupervisor_whenTriesAssignSupervisorUserWithoutRole_thenConflict() {
+    void updateEmployee_userIsSupervisor_whenTriesAssignSupervisorUserWithoutRole_thenConflictException() {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 
@@ -446,7 +444,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_userIsSupervisor_whenTriesAssignRoleAdmin_thenThrowInsufficientPermissionsException() {
+    void updateEmployee_userIsSupervisor_whenTriesAssignRoleAdmin_thenInsufficientPermissionsException() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -472,7 +470,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_emptyBody_thenValidationError() {
+    void updateEmployee_emptyBody_thenValidationException() {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 
@@ -485,7 +483,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_withNotExistingRole_thenValidationError() {
+    void updateEmployee_withNotExistingRole_thenValidationException() {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 
@@ -501,7 +499,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_invalidUserId_thenNotFound() {
+    void updateEmployee_invalidUserId_thenNotFoundException() {
         var employee = DatabaseSeeder.createNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null);
 
@@ -515,7 +513,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_userIsSupervisor_thenSuccess() {
+    void updateEmployee_userIsSupervisor_thenReturnSuccess() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -547,7 +545,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void updateEmployee_userIsAdmin_thenSuccess() {
+    void updateEmployee_userIsAdmin_thenReturnSuccess() {
         var supervisor = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 
@@ -580,7 +578,7 @@ public class UserEndpointTest {
      */
 
     @Test
-    void deleteEmployee_userIsEmployee_thenThrowInsufficientPermissionsException() {
+    void deleteEmployee_userIsEmployee_thenInsufficientPermissionsException() {
         var employeeRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null);
@@ -600,7 +598,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void deleteEmployee_userIsSupervisor_whenTriesDeleteNotOwnEmployee_thenThrowInsufficientPermissionsException() {
+    void deleteEmployee_userIsSupervisor_whenTriesDeleteNotOwnEmployee_thenInsufficientPermissionsException() {
         var supervisorRequest = DatabaseSeeder.createNewUser(
                 List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null);
@@ -627,7 +625,7 @@ public class UserEndpointTest {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 
-        DatabaseSeeder.generateInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICES);
+        DatabaseSeeder.insertInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICES);
 
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -654,7 +652,7 @@ public class UserEndpointTest {
     }
 
     @Test
-    void deleteEmployee_thenSuccess() {
+    void deleteEmployee_thenReturnSuccess() {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 

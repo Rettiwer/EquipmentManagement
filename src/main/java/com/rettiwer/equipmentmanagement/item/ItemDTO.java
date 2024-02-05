@@ -1,7 +1,9 @@
 package com.rettiwer.equipmentmanagement.item;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.rettiwer.equipmentmanagement.item.validator.IsSupervisorEmployee;
 import com.rettiwer.equipmentmanagement.user.User;
+import com.rettiwer.equipmentmanagement.user.role.validator.IsUserExists;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -33,6 +35,8 @@ public class ItemDTO {
 
     @NonNull
     @NotNull
+    @IsUserExists
+    @IsSupervisorEmployee
     private Integer ownerId;
 
     private Long invoiceId;

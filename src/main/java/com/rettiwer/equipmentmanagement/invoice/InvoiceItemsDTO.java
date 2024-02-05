@@ -2,6 +2,7 @@ package com.rettiwer.equipmentmanagement.invoice;
 
 import com.fasterxml.jackson.annotation.*;
 import com.rettiwer.equipmentmanagement.item.ItemDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -25,5 +26,6 @@ public class InvoiceItemsDTO {
         private LocalDate invoiceDate;
 
         @NonNull
+        @Valid
         private List<ItemDTO> items;
 }
