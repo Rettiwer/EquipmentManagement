@@ -2,11 +2,11 @@ package com.rettiwer.equipmentmanagement.user;
 
 
 import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
-import com.rettiwer.equipmentmanagement.item.Item;
-import com.rettiwer.equipmentmanagement.item.ItemDTO;
-import com.rettiwer.equipmentmanagement.item.ItemMapper;
 import com.rettiwer.equipmentmanagement.user.role.mapper.RoleMapper;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 

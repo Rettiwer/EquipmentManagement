@@ -1,77 +1,80 @@
 package com.rettiwer.equipmentmanagement.api;
 
 import com.rettiwer.equipmentmanagement.api.utils.DatabaseSeeder;
-import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
-import com.rettiwer.equipmentmanagement.user.role.Role;
+import com.rettiwer.equipmentmanagement.authentication.AuthenticationRequest;
+import com.rettiwer.equipmentmanagement.authentication.AuthenticationResponse;
+import com.rettiwer.equipmentmanagement.api.jwt.MockAccessToken;
+import com.rettiwer.equipmentmanagement.api.jwt.MockAccessTokenExtension;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ExtendWith(SpringExtension.class)
+@ExtendWith(MockAccessTokenExtension.class)
 public class TokenAuthenticateEndpointTest {
     @Value("${application.api.route}/auth")
-    private String API_ROUTE;
+    private String API_ROUTE_AUTH;
+
+    @Value("${application.api.route}/users")
+    private String API_ROUTE_USERS;
+
+    @MockAccessToken
+    private String ACCESS_TOKEN;
 
     @Test
-    @Order(1)
-    public void whenUserCreated_withNotExistingRole_thenError() {
-//        var request = DatabaseSeeder.createNewUser();
-//        request.setRoles(List.of(new RoleDTO("NOT_EXISTING_ROLE")));
-//
-//        Response response = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .body(request)
-//                .post(API_ROUTE + "/register");
-//
-//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
-    }
-    @Test
-    @Order(2)
-    public void whenUserCreated_thenTokenReturned() {
-//        var request = DatabaseSeeder.createNewUser();
-//        Response response = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .body(request)
-//                .post(API_ROUTE + "/register");
-//
-//        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-//        assertNotNull(response.jsonPath().get("access_token"));
+    public void authenticate_userNotExists_thenUnauthorized() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")), null);
+
+        Response response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .post(API_ROUTE_AUTH + "/authenticate");
+
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode());
     }
 
     @Test
-    @Order(3)
-    public void whenUserCreated_isExisting_thenError() {
-//        var request = DatabaseSeeder.createNewUser();
-//        Response response = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .body(request)
-//                .post(API_ROUTE + "/register");
-//
-//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
+    public void authenticate_withBadCredentials_thenUnauthorized() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")), null);
+
+        DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        Response response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new AuthenticationRequest(employeeRequest.getEmail(), "BAD_PASS"))
+                .post(API_ROUTE_AUTH + "/authenticate");
+
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode());
     }
 
     @Test
-    @Order(4)
-    public void whenUserAuthenticated_thenTokenReturned() {
-//        var request = DatabaseSeeder.createNewUser();
-//        Response response = RestAssured.given()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .body(request)
-//                .post(API_ROUTE + "/authenticate");
-//
-//        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-//        assertNotNull(response.jsonPath().get("access_token"));
+    public void authenticate_thenReturnToken() {
+        var employeeRequest = DatabaseSeeder.createNewUser(
+                List.of(new RoleDTO("ROLE_EMPLOYEE")), null);
+
+        DatabaseSeeder.insertNewUser(employeeRequest, ACCESS_TOKEN, API_ROUTE_USERS);
+
+        Response response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
+                .post(API_ROUTE_AUTH + "/authenticate");
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        assertNotNull(response.as(AuthenticationResponse.class).getAccessToken());
     }
 }

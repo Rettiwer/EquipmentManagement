@@ -4,12 +4,10 @@ import com.rettiwer.equipmentmanagement.apierror.exception.InsufficientPermissio
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.item.Item;
 import com.rettiwer.equipmentmanagement.user.User;
-import com.rettiwer.equipmentmanagement.item.UserItemsDTO;
 import com.rettiwer.equipmentmanagement.user.UserRepository;
 import com.rettiwer.equipmentmanagement.user.role.Role;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +26,7 @@ public class InvoiceService {
     public InvoiceItemsDTO getById(Long invoiceId) {
         User currentUser = authService.getCurrentUser();
 
-        if (!currentUser.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)))
+        if (currentUser.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)))
             throw new InsufficientPermissionException();
 
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(EntityNotFoundException::new);
@@ -53,7 +51,7 @@ public class InvoiceService {
     public InvoiceItemsDTO create(InvoiceItemsDTO invoiceItemsDTO) {
         User currentUser = authService.getCurrentUser();
 
-        if (!currentUser.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)))
+        if (currentUser.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)))
             throw new InsufficientPermissionException();
 
         invoiceItemsDTO.setId(null);
@@ -69,7 +67,7 @@ public class InvoiceService {
     public InvoiceItemsDTO replace(InvoiceItemsDTO invoiceItemsDTO, Long invoiceId) {
         User currentUser = authService.getCurrentUser();
 
-        if (!currentUser.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)))
+        if (currentUser.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)))
             throw new InsufficientPermissionException();
 
         Invoice invoice = invoiceRepository.findById(invoiceItemsDTO.getId()).orElseThrow(EntityNotFoundException::new);
@@ -84,7 +82,7 @@ public class InvoiceService {
     public void delete(Long invoiceId) {
         User currentUser = authService.getCurrentUser();
 
-        if (!currentUser.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)))
+        if (currentUser.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)))
             throw new InsufficientPermissionException();
 
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(EntityNotFoundException::new);

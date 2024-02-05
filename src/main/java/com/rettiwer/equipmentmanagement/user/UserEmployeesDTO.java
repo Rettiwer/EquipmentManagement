@@ -1,7 +1,5 @@
 package com.rettiwer.equipmentmanagement.user;
 
-import com.rettiwer.equipmentmanagement.item.ItemDTO;
-import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

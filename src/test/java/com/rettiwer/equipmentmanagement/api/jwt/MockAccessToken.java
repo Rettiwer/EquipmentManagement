@@ -1,4 +1,4 @@
-package com.rettiwer.equipmentmanagement.mocks.jwt;
+package com.rettiwer.equipmentmanagement.api.jwt;
 
 import java.lang.annotation.*;
 

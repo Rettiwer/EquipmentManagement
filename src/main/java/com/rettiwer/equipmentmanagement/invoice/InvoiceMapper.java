@@ -1,9 +1,9 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
 import com.rettiwer.equipmentmanagement.item.ItemMapper;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
-import java.lang.annotation.Target;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {ItemMapper.class})

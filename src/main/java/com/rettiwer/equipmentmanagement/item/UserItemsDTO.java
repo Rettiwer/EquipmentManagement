@@ -1,6 +1,5 @@
 package com.rettiwer.equipmentmanagement.item;
 
-import com.rettiwer.equipmentmanagement.item.ItemDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

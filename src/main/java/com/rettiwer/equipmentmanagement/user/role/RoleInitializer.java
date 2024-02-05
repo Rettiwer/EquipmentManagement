@@ -14,7 +14,7 @@ public class RoleInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         if(roleRepository.findAll().isEmpty()) {
             List<Role> roles = Arrays.stream(Role.UserRole.values())
                     .map(Role::new).toList();

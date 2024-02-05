@@ -2,9 +2,9 @@ package com.rettiwer.equipmentmanagement.user.role.mapper;
 
 import com.rettiwer.equipmentmanagement.user.role.Role;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {RoleMapperResolver.class})
 public interface RoleMapper {

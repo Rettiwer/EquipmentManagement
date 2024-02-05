@@ -3,8 +3,8 @@ package com.rettiwer.equipmentmanagement.api;
 import com.rettiwer.equipmentmanagement.api.utils.DatabaseSeeder;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationRequest;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
-import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessToken;
-import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessTokenExtension;
+import com.rettiwer.equipmentmanagement.api.jwt.MockAccessToken;
+import com.rettiwer.equipmentmanagement.api.jwt.MockAccessTokenExtension;
 import com.rettiwer.equipmentmanagement.user.UserDTO;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import io.restassured.RestAssured;
@@ -25,7 +25,6 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

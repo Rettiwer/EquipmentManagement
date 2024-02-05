@@ -1,6 +1,6 @@
 package com.rettiwer.equipmentmanagement.item;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.rettiwer.equipmentmanagement.invoice.Invoice;
 import com.rettiwer.equipmentmanagement.user.User;
 import jakarta.persistence.*;

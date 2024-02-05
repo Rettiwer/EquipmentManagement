@@ -1,8 +1,6 @@
 package com.rettiwer.equipmentmanagement.item;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.rettiwer.equipmentmanagement.item.validator.IsSupervisorEmployee;
-import com.rettiwer.equipmentmanagement.user.User;
 import com.rettiwer.equipmentmanagement.user.role.validator.IsUserExists;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

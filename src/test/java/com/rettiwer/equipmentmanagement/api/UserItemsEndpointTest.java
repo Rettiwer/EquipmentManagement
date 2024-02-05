@@ -4,8 +4,8 @@ import com.rettiwer.equipmentmanagement.api.utils.DatabaseSeeder;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationRequest;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.item.UserItemsDTO;
-import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessToken;
-import com.rettiwer.equipmentmanagement.mocks.jwt.MockAccessTokenExtension;
+import com.rettiwer.equipmentmanagement.api.jwt.MockAccessToken;
+import com.rettiwer.equipmentmanagement.api.jwt.MockAccessTokenExtension;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,6 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockAccessTokenExtension.class)

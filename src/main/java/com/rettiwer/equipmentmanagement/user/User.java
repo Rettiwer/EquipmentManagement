@@ -2,22 +2,17 @@ package com.rettiwer.equipmentmanagement.user;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rettiwer.equipmentmanagement.authentication.token.Token;
 import com.rettiwer.equipmentmanagement.item.Item;
 import com.rettiwer.equipmentmanagement.user.role.Role;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -79,7 +74,7 @@ public class User implements UserDetails {
     }
 
     public boolean hasAnyRole(List<Role.UserRole> userRoles) {
-        return roles.stream().anyMatch(role -> userRoles.contains(role.getName()));
+        return roles.stream().noneMatch(role -> userRoles.contains(role.getName()));
     }
 
     @Override

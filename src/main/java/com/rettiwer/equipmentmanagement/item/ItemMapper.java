@@ -2,7 +2,9 @@ package com.rettiwer.equipmentmanagement.item;
 
 import com.rettiwer.equipmentmanagement.user.User;
 import com.rettiwer.equipmentmanagement.user.UserMapper;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 

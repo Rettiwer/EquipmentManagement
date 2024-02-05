@@ -1,9 +1,7 @@
-package com.rettiwer.equipmentmanagement.mocks.jwt;
+package com.rettiwer.equipmentmanagement.api.jwt;
 
 import com.rettiwer.equipmentmanagement.api.utils.DatabaseSeeder;
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
-import com.rettiwer.equipmentmanagement.authentication.RegisterRequest;
-import com.rettiwer.equipmentmanagement.user.role.Role;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -13,7 +11,6 @@ import org.junit.platform.commons.support.ModifierSupport;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
 

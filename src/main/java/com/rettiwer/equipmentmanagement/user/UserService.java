@@ -27,7 +27,7 @@ public class UserService {
     public UserDTO getById(Integer id) {
         User user = authService.getCurrentUser();
 
-        if (!user.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)) &&
+        if (user.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)) &&
                 !Objects.equals(user.getId(), id)) {
             throw new InsufficientPermissionException();
         }

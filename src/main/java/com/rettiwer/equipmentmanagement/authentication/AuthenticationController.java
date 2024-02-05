@@ -1,9 +1,7 @@
 package com.rettiwer.equipmentmanagement.authentication;
 
-import com.rettiwer.equipmentmanagement.user.UserDTO;
-import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

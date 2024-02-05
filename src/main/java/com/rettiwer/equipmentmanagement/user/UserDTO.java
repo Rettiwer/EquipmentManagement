@@ -1,7 +1,5 @@
 package com.rettiwer.equipmentmanagement.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.rettiwer.equipmentmanagement.authentication.validator.UniqueEmail;
 import com.rettiwer.equipmentmanagement.item.ItemDTO;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import jakarta.validation.Valid;

@@ -1,6 +1,6 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.rettiwer.equipmentmanagement.item.ItemDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

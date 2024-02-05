@@ -2,7 +2,6 @@ package com.rettiwer.equipmentmanagement.configuration;
 
 import com.rettiwer.equipmentmanagement.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

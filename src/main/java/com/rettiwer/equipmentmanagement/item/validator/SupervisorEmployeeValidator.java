@@ -2,9 +2,7 @@ package com.rettiwer.equipmentmanagement.item.validator;
 
 import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.user.User;
-import com.rettiwer.equipmentmanagement.user.UserRepository;
 import com.rettiwer.equipmentmanagement.user.role.Role;
-import com.rettiwer.equipmentmanagement.user.role.validator.IsUserExists;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;

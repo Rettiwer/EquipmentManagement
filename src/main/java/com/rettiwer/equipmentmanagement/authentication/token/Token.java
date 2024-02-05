@@ -2,7 +2,10 @@ package com.rettiwer.equipmentmanagement.authentication.token;
 
 import com.rettiwer.equipmentmanagement.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder

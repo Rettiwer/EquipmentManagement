@@ -1,7 +1,6 @@
 package com.rettiwer.equipmentmanagement.apierror;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.ConstraintViolation;
 import lombok.Data;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -10,9 +9,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 

@@ -1,12 +1,10 @@
 package com.rettiwer.equipmentmanagement.invoice;
 
-import com.fasterxml.jackson.annotation.*;
 import com.rettiwer.equipmentmanagement.item.Item;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 
