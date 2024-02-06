@@ -1,9 +1,18 @@
-import {redirect} from "@sveltejs/kit";
+import type { PageServerLoad, Actions } from './$types';
+import { redirect, fail } from '@sveltejs/kit';
 
-/** @type {import('./$types').Actions} */
-export const actions: import('./$types').Actions = {
-    default: async ({ cookies, request }) => {
-        const data = await request.formData();
+export const load: PageServerLoad = (event) => {
+    const user = event.locals.user;
+
+    if (user) {
+        throw redirect(302, '/items');
+    }
+};
+
+/** @type {import("./$types").Actions} */
+export const actions: Actions = {
+    default: async (event) => {
+        const data = await event.request.formData();
 
         try {
             const res = await fetch('http://127.0.0.1/api/auth/authenticate', {
@@ -20,19 +29,33 @@ export const actions: import('./$types').Actions = {
                 return { success: false, error: res.status, message: result.message };
             }
 
-            cookies.set('accessToken', result.access_token, {
+            console.log(result);
+
+            let accessTokenTime = new Date();
+            accessTokenTime.setDate(accessTokenTime.getDate() + 1);
+            event.cookies.set('accessToken', result.access_token, {
                 path: '/',
                 sameSite: 'lax',
-                httpOnly: true
+                httpOnly: true,
+                expires: accessTokenTime,
+                secure: false
             });
 
-            cookies.set('refreshToken', result.refresh_token, {
+            let refreshTokenTime = new Date();
+            refreshTokenTime.setDate(refreshTokenTime.getDate() + 7);
+            event.cookies.set('refreshToken', result.refresh_token, {
                 path: '/',
                 sameSite: 'lax',
-                httpOnly: true
+                httpOnly: true,
+                expires: refreshTokenTime,
+                secure: false
             });
 
-            throw redirect(303, '/equipment');
+          //  event.locals.user.id = result.id;
+
+            console.log(event.locals.user);
+
+            redirect(303, '/items');
         } catch (error) {
             console.log(error);
         }

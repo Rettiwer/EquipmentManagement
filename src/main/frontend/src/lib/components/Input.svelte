@@ -4,7 +4,7 @@
     let inputElement: HTMLInputElement;
     let className = '';
 
-    export let label: string = "", placeholder: string = "", parentClass: string = "";
+    export let value:string, label: string = "", placeholder: string = "", parentClass: string = "";
     export { className as class };
 
     onMount(() => {
@@ -21,6 +21,7 @@
     </label>
     <input
             bind:this={inputElement}
+            bind:value={value}
             on:input
             {...$$restProps}
             placeholder="{ placeholder }" class="input input-bordered w-full mb-4 { className }" />

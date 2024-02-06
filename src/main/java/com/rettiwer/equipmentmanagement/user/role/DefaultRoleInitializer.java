@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class RoleInitializer implements CommandLineRunner {
+public class DefaultRoleInitializer implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
 

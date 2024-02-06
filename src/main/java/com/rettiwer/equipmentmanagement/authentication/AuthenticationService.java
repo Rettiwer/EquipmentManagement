@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -40,7 +42,6 @@ public class AuthenticationService {
 
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
-                .id(savedUser.getId())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -52,12 +53,17 @@ public class AuthenticationService {
                         authenticationRequest.getPassword()));
 
             var user = userRepository.findByEmail(authenticationRequest.getEmail())
-                    .orElseThrow();
-            var jwtToken = jwtService.generateToken(user);
+                    .orElseThrow(EntityNotFoundException::new);
+
+            var extraClaims = new HashMap<String, Object>();
+            extraClaims.put("id", user.getId());
+
+            var jwtToken = jwtService.generateToken(extraClaims, user);
             var refreshToken = jwtService.generateRefreshToken(user);
             revokeAllUserTokens(user);
             saveUserToken(user, jwtToken);
             return AuthenticationResponse.builder()
+                    .id(user.getId())
                     .accessToken(jwtToken)
                     .refreshToken(refreshToken)
                     .build();

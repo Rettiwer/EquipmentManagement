@@ -1,12 +1,13 @@
 <script lang="ts">
     import Button from "$lib/components/Button.svelte";
 
+
     let employeeEquipment = [
         {
             "full_name": "Krzysztof Joszko",
             "items": [
                 {
-                    "name": "Test equipment item",
+                    "name": "Test items item",
                     "price": 100,
                     "invoice": {
                         "invoice_id": "2022/2/2",
@@ -18,7 +19,7 @@
             "full_name": "Krzysztof Joszko",
             "items": [
                 {
-                    "name": "Test equipment item",
+                    "name": "Test items item",
                     "price": 100,
                     "invoice": {
                         "invoice_id": "2022/2/2",
@@ -27,7 +28,6 @@
             ]
         }
     ];
-
 </script>
 
 <svelte:head>
@@ -42,7 +42,7 @@
             { #each employeeEquipment as employee, i }
                 <section class="mb-8">
                     <h1 class="text-2xl font-bold mb-3">{ employee.full_name }</h1>
-                    <div class="overflow-x-auto bg-base-100 shadow-md rounded-xl bg-base-300">
+                    <div class="overflow-x-auto shadow-md rounded-xl bg-base-300">
                         <table class="table table-normal w-full">
                             <thead>
                             <tr>
