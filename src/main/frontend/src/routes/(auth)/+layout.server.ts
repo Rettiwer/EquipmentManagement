@@ -4,7 +4,7 @@ import type {LayoutServerLoad} from "../../../.svelte-kit/types/src/routes/(dash
 export const ssr = false;
 
 export const load = (async ({ cookies }) => {
-    const sessionid = cookies.get('accessToken');
+    const sessionid = cookies.get('Authorization');
 
     if (sessionid) {
         throw redirect(302, '/items');

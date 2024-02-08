@@ -3,37 +3,26 @@
     import Input from "$lib/components/Input.svelte";
     import Checkbox from "$lib/components/Checkbox.svelte";
     import Button from "$lib/components/Button.svelte";
-    import {redirect} from "@sveltejs/kit";
     import {type AuthenticationRequest, login} from "$lib/api/auth";
+    import Cookies from "js-cookie";
+    import type {ApiError} from "$lib/api/main";
 
     let request: AuthenticationRequest = {
         email: "",
         password: "",
     }
 
-    function onSubmit() {
-        console.log("asd");
-        login(request);
-            //
-            // let accessTokenTime = new Date();
-            // accessTokenTime.setDate(accessTokenTime.getDate() + 1);
-            // event.cookies.set('accessToken', result.access_token, {
-            //     path: '/',
-            //     sameSite: 'lax',
-            //     httpOnly: true,
-            //     expires: accessTokenTime,
-            //     secure: false
-            // });
-            //
-            // let refreshTokenTime = new Date();
-            // refreshTokenTime.setDate(refreshTokenTime.getDate() + 7);
-            // event.cookies.set('refreshToken', result.refresh_token, {
-            //     path: '/',
-            //     sameSite: 'lax',
-            //     httpOnly: true,
-            //     expires: refreshTokenTime,
-            //     secure: false
-            // });
+    let errors: ApiError;
+
+    async function onSubmit() {
+        await login(request).then(response => {
+            Cookies.set('Authorization', `Bearer ${response.access_token}`, {expires: 1, sameSite: 'lax'});
+            Cookies.set('refreshToken', response.refresh_token, {expires: 7, sameSite: 'lax'});
+
+            window.location.replace('/items');
+        }).catch(error => {
+            errors = error;
+        });
     }
 
 </script>
@@ -46,9 +35,9 @@
         title="Log In">
     <span slot="content">
 
-        <!--{#if errors && form?.message != null }-->
-        <!--    <p class="text-red-500">{form.message}</p>-->
-        <!--{/if}-->
+        {#if errors && errors.message != null }
+            <p class="text-red-500">{errors.message}</p>
+        {/if}
 
         <form on:submit|preventDefault={onSubmit}>
             <Input
@@ -72,7 +61,7 @@
                     bind:value={request.password}
             />
 
-            <Checkbox name="remember" label="Remember me"/>
+<!--            <Checkbox name="remember" label="Remember me"/>-->
 
             <div class="flex items-center justify-end mt-4">
 

@@ -1,4 +1,4 @@
-import Cookies from "js-cookie";
+import {type ApiError, post} from "$lib/api/main";
 
 export type AuthenticationRequest = {
     email: string,
@@ -12,24 +12,16 @@ export type AuthenticationResponse = {
 
 export const login = async (request: AuthenticationRequest) => {
     try {
-        const res = await fetch('http://127.0.0.1/api/auth/authenticate', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(request)
-        });
-
-        if (res.status === 200) {
-            const response = (await res.json()) as AuthenticationResponse;
-
-            Cookies.set('Authorization', `Bearer ${response.access_token}`, { expires: 1 });
-            Cookies.set('refreshToken',  response.refresh_token, { expires: 7 });
-
-            window.location.replace('/items');
-        } else {
-        }
+        const response = await post('auth/authenticate', request, false);
+        return response as AuthenticationResponse;
     } catch (error) {
-        console.log("Login failed: ", error)
+        if (!error.response) {
+            let networkError = <ApiError>{status: -1, message: "Network error has occurred.", debugMessage: error.code};
+            return Promise.reject(networkError);
+        }
+        if (error.response.status >= 400 && error.response.status < 500) {
+            throw error.response.data as ApiError;
+        }
+        console.error(error);
     }
 }

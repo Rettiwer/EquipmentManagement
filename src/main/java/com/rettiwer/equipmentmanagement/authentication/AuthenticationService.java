@@ -56,14 +56,13 @@ public class AuthenticationService {
                     .orElseThrow(EntityNotFoundException::new);
 
             var extraClaims = new HashMap<String, Object>();
-            extraClaims.put("id", user.getId());
+            extraClaims.put("userId", user.getId());
 
             var jwtToken = jwtService.generateToken(extraClaims, user);
             var refreshToken = jwtService.generateRefreshToken(user);
             revokeAllUserTokens(user);
             saveUserToken(user, jwtToken);
             return AuthenticationResponse.builder()
-                    .id(user.getId())
                     .accessToken(jwtToken)
                     .refreshToken(refreshToken)
                     .build();

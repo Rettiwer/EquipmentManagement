@@ -97,9 +97,4 @@
     </section>
 </section>
 
-<style>
-    .liquidatedItem {
-        background-image: repeating-linear-gradient(45deg, hsl(var(--b1)), hsl(var(--b2)) 13px, hsl(var(--b2)) 13px, hsl(var(--b2)) 14px);
-    }
-</style>
 

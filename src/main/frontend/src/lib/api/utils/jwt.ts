@@ -5,7 +5,7 @@ export function decodeJWT(token: string): any | null {
     }
 
     const encodedPayload = parts[1];
-    const decodedPayload = Buffer.from(encodedPayload, 'base64').toString('utf-8');
+    const decodedPayload = atob(encodedPayload);
 
     try {
         return JSON.parse(decodedPayload);
