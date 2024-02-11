@@ -1,5 +1,6 @@
 package com.rettiwer.equipmentmanagement.user;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.rettiwer.equipmentmanagement.item.ItemDTO;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     private Integer id;
     @NotNull

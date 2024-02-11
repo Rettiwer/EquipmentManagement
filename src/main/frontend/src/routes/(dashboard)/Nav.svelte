@@ -1,7 +1,7 @@
 <script lang="ts">
     import NavItem from "$lib/components/NavItem.svelte";
     import Logo from "$lib/components/Logo.svelte";
-    import user from "$lib/components/stores/user";
+    import {page} from "$app/stores";
 
     let visibleMobileMenu = false;
 </script>
@@ -51,7 +51,7 @@
             <ul class="space-y-2 mt-10">
                 <li>
                     <a href="/">
-                        <NavItem title={$user.auth?.firstname + ' ' + $user.auth?.lastname} selected>
+                        <NavItem title={$page.data.user.firstname + ' ' + $page.data.user?.lastname} selected>
                     <span slot="before">
 <!--                        <Icon><FaRegUserCircle /></Icon>-->
                     </span>

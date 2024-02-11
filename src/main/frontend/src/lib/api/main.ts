@@ -1,6 +1,5 @@
 import axios, {type AxiosInstance} from 'axios';
 import axiosRetry from 'axios-retry';
-import Cookies from "js-cookie";
 
 export interface ApiError {
     status: number;
@@ -14,6 +13,7 @@ const API_BASE:string = 'http://192.168.1.152/api/';
 const axiosAPI: AxiosInstance = axios.create({
     baseURL : API_BASE
 });
+
 
 axiosRetry(axiosAPI, {
     retries: 2,
@@ -36,9 +36,10 @@ axiosAPI.interceptors.response.use(
     }
 );
 
-const apiRequest = (method: string, url: string, request: any, enableRetries: boolean = true) => {
+const apiRequest = (method: string, url: string, request: any, token: string, enableRetries: boolean = true) => {
+
     const headers: any = {
-        authorization: Cookies.get('Authorization') || '',
+        Authorization:  'Bearer ' + token,
     };
 
     //using the axios instance to perform the request that received from each http method
@@ -58,11 +59,20 @@ const apiRequest = (method: string, url: string, request: any, enableRetries: bo
     }).then(res => {
         return Promise.resolve(res.data);
     })
-    .catch(err => {
-        return Promise.reject(err);
+    .catch(error => {
+        if (!error.response) {
+            let networkError = <ApiError>{status: -1, message: "Network error has occurred.", debugMessage: error.code};
+            return Promise.reject(networkError);
+        }
+        if (error.response.status >= 400 && error.response.status < 500) {
+            throw error.response.data as ApiError;
+        }
+        return Promise.reject(error);
     });
 };
 
-export const get = (url: string, request: any, enableRetries: boolean = true): Promise<any> => apiRequest("get", url, request, enableRetries);
+export const get = (url: string, request: any, token: string = '', enableRetries: boolean = true): Promise<any> =>
+    apiRequest("get", url, request, token, enableRetries);
 
-export const post = (url: string, request: any, enableRetries: boolean = true) => apiRequest("post", url, request, enableRetries);
+export const post = (url: string, request: any, token: string = '', enableRetries: boolean = true) =>
+    apiRequest("post", url, request, token, enableRetries);

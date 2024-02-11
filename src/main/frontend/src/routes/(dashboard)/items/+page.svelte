@@ -1,5 +1,6 @@
 <script lang="ts">
     import Button from "$lib/components/Button.svelte";
+    import {page} from "$app/stores";
 
 
     let employeeEquipment = [
@@ -28,6 +29,7 @@
             ]
         }
     ];
+    $: $page, console.log($page);
 </script>
 
 <svelte:head>
@@ -86,7 +88,7 @@
                 </div>
             </div>
 
-                <hr>
+            <hr>
 
             <div class="flex flex-col justify-center m-4 sm:flex-row sm:space-bettween">
                 <Button class="mb-4 sm:mb-0">
@@ -96,5 +98,3 @@
         </div>
     </section>
 </section>
-
-

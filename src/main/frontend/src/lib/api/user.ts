@@ -1,24 +1,19 @@
-import {type ApiError, get} from "$lib/api/main";
-
+import { get} from "$lib/api/main";
 
 export type User = {
     id: string
     firstname: string,
-    lastname: string
+    lastname: string,
+    email: string,
+    roles: string[],
 }
 
-export const getUserById = async (id: string) => {
+export const getUserById = async (id: string, token: string) => {
     try {
-        const response = await get('users/' + id, null);
+        const response = await get('users/' + id, null, token);
         return response as User;
     } catch (error) {
-        if (!error.response) {
-            let networkError = <ApiError>{status: -1, message: "Network error has occurred.", debugMessage: error.code};
-            return Promise.reject(networkError);
-        }
-        if (error.response.status >= 400 && error.response.status < 500) {
-            throw error.response.data as ApiError;
-        }
         console.error(error);
+        throw error;
     }
 }

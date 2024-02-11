@@ -9,12 +9,13 @@ declare global {
 		// interface Platform {}
 
 		interface Locals {
-			user?: {
+			isUserLoggedIn: boolean;
+			user: {
 				id: string;
 				email: string;
-				firstName: string;
-				lastName: string;
-			};
+				accessToken: string;
+				refreshToken: string;
+			} | null;
 		}
 	}
 }

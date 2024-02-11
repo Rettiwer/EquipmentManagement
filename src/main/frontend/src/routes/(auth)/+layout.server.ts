@@ -1,12 +1,11 @@
+import type {LayoutServerLoad} from './$types';
 import {redirect} from "@sveltejs/kit";
-import type {LayoutServerLoad} from "../../../.svelte-kit/types/src/routes/(dashboard)/$types";
 
-export const ssr = false;
+export let ssr = true;
 
-export const load = (async ({ cookies }) => {
-    const sessionid = cookies.get('Authorization');
-
-    if (sessionid) {
-        throw redirect(302, '/items');
+export const load = (async ({ cookies, locals }) => {
+    if (locals.isUserLoggedIn) {
+        redirect(302,'/');
     }
+
 }) satisfies LayoutServerLoad;
