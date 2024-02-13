@@ -6,6 +6,7 @@ import com.rettiwer.equipmentmanagement.authentication.AuthenticationService;
 import com.rettiwer.equipmentmanagement.item.UserItemsDTO;
 import com.rettiwer.equipmentmanagement.api.jwt.MockAccessToken;
 import com.rettiwer.equipmentmanagement.api.jwt.MockAccessTokenExtension;
+import com.rettiwer.equipmentmanagement.user.BasicUserDTO;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
@@ -40,16 +41,23 @@ public class UserItemsEndpointTest {
     @MockAccessToken
     private String ACCESS_TOKEN;
 
+    private BasicUserDTO userAdmin;
+
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @BeforeEach
+    public void setup() {
+        userAdmin = DatabaseSeeder.getUserById(1, ACCESS_TOKEN, API_ROUTE_USERS);
+    }
 
     @Test
     void getAllUserItems_asAdmin_thenReturnAllUserItems() {
         var supervisor = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 1, ACCESS_TOKEN, API_ROUTE_USERS);
 
-        DatabaseSeeder.insertInvoice(5, supervisor.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(5, supervisor, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         var response = RestAssured.given()
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
@@ -76,12 +84,12 @@ public class UserItemsEndpointTest {
                 .authenticate(new AuthenticationRequest(supervisorRequest.getEmail(), supervisorRequest.getPassword()))
                 .getAccessToken();
 
-        DatabaseSeeder.insertInvoice(5, supervisor.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(5, supervisor, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 supervisor.getId(), ACCESS_TOKEN, API_ROUTE_USERS);
 
-        DatabaseSeeder.insertInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(2, employee, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         var response = RestAssured.given()
                 .headers("Authorization", "Bearer " + supervisorAccessToken)
@@ -104,10 +112,10 @@ public class UserItemsEndpointTest {
                 .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
                 .getAccessToken();
 
-        DatabaseSeeder.insertInvoice(5, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(5, employee, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         //MockedAdmin Items
-        DatabaseSeeder.insertInvoice(6, 1, ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(6, userAdmin, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         var response = RestAssured.given()
                 .headers("Authorization", "Bearer " + supervisorAccessToken)
@@ -123,7 +131,7 @@ public class UserItemsEndpointTest {
         var supervisor = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_SUPERVISOR")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 
-        DatabaseSeeder.insertInvoice(5, supervisor.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(5, supervisor, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         var response = RestAssured.given()
                 .headers("Authorization", "Bearer " + ACCESS_TOKEN)
@@ -148,7 +156,7 @@ public class UserItemsEndpointTest {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 1, ACCESS_TOKEN, API_ROUTE_USERS);
 
-        DatabaseSeeder.insertInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(2, employee, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         var response = RestAssured.given()
                 .headers("Authorization", "Bearer " + supervisorAccessToken)
@@ -171,7 +179,7 @@ public class UserItemsEndpointTest {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 supervisor.getId(), supervisorAccessToken, API_ROUTE_USERS);
 
-        DatabaseSeeder.insertInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(2, employee, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         var response = RestAssured.given()
                 .headers("Authorization", "Bearer " + supervisorAccessToken)
@@ -212,7 +220,7 @@ public class UserItemsEndpointTest {
                 .authenticate(new AuthenticationRequest(employeeRequest.getEmail(), employeeRequest.getPassword()))
                 .getAccessToken();
 
-        DatabaseSeeder.insertInvoice(5, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICE);
+        DatabaseSeeder.insertInvoice(5, employee, ACCESS_TOKEN, API_ROUTE_INVOICE);
 
         var response = RestAssured.given()
                 .headers("Authorization", "Bearer " + employeeAccessToken)

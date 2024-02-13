@@ -1,5 +1,9 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
+
+
+import type Api from "$lib/server/v1/Api";
+
 declare global {
 	namespace App {
 		// interface Error {}
@@ -12,10 +16,10 @@ declare global {
 			isUserLoggedIn: boolean;
 			user: {
 				id: string;
-				email: string;
 				accessToken: string;
 				refreshToken: string;
 			} | null;
+			api: Api
 		}
 	}
 }

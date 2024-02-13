@@ -12,14 +12,14 @@ import java.util.List;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {UserMapper.class})
 public interface ItemMapper {
-    @Mapping(source = "owner.id", target = "ownerId")
+   // @Mapping(source = "owner.id", target = "ownerId")
     @Mapping(target = "invoiceId", source = "invoice.id")
     ItemDTO toDto(Item item);
 
-    @Mapping(source = "ownerId", target = "owner")
+  //  @Mapping(source = "ownerId", target = "owner")
     Item toEntity(ItemDTO itemDTO);
 
-    @Mapping(source = "owner.id", target = "ownerId")
+   // @Mapping(source = "owner.id", target = "ownerId")
     List<ItemDTO> toListDto(List<Item> items);
 
 

@@ -101,28 +101,29 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public AuthenticationResponse refreshToken(HttpServletRequest request) {
+    public AuthenticationResponse refreshToken(RefreshTokenRequest data, HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String userEmail;
 
         if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
             throw new MalformedJwtException("Invalid token.");
         }
 
-        refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
+        var user = userRepository.findById(data.getUserId()).orElseThrow(EntityNotFoundException::new);
 
-        var user = userRepository.findByEmail(userEmail).orElseThrow(EntityNotFoundException::new);
-
-        if (!jwtService.isTokenValid(refreshToken, user))
+        if (!jwtService.isTokenValid(data.getRefreshToken(), user))
             throw new ExpiredJwtException(null, null, "Token has expired!");
 
-        var accessToken = jwtService.generateToken(user);
+        var extraClaims = new HashMap<String, Object>();
+        extraClaims.put("userId", user.getId());
+
+        var accessToken = jwtService.generateToken(extraClaims, user);
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
 
+        var refreshToken = jwtService.generateRefreshToken(user);
+
         return AuthenticationResponse.builder()
+                .userId(user.getId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

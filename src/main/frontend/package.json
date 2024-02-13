@@ -30,6 +30,7 @@
 	},
 	"dependencies": {
 		"@ethercorps/sveltekit-redis-session": "^1.2.1",
+		"@tabler/icons-svelte": "^2.47.0",
 		"@types/js-cookie": "^3.0.6",
 		"axios": "^1.6.7",
 		"axios-retry": "^4.0.0",

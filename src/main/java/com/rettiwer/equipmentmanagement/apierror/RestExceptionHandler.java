@@ -4,6 +4,7 @@ import com.rettiwer.equipmentmanagement.apierror.exception.InsufficientPermissio
 import com.rettiwer.equipmentmanagement.apierror.exception.RelationConstraintViolationException;
 import com.rettiwer.equipmentmanagement.user.exception.UserHasEmployeesException;
 import com.rettiwer.equipmentmanagement.user.exception.UserHasItemsException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +68,11 @@ public class RestExceptionHandler {
     public ResponseEntity<Object> handleInvalidJWTException(Exception ex) {
         String msg = "Access token is invalid.";
         return buildResponseEntity(new ApiError(UNAUTHORIZED, msg, ex));
+    }
+
+    @ExceptionHandler({ ExpiredJwtException.class })
+    public ResponseEntity<Object> handleExpiredJwtException(Exception ex) {
+        return buildResponseEntity(new ApiError(UNAUTHORIZED, ex.getMessage(), ex));
     }
 
     /**

@@ -624,7 +624,7 @@ public class UserEndpointTest {
         var employee = DatabaseSeeder.insertNewUser(List.of(new RoleDTO("ROLE_EMPLOYEE")),
                 null, ACCESS_TOKEN, API_ROUTE_USERS);
 
-        DatabaseSeeder.insertInvoice(2, employee.getId(), ACCESS_TOKEN, API_ROUTE_INVOICES);
+        DatabaseSeeder.insertInvoice(2, employee, ACCESS_TOKEN, API_ROUTE_INVOICES);
 
         var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

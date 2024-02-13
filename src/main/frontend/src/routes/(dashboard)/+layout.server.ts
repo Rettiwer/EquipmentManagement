@@ -1,6 +1,6 @@
 import type {LayoutServerLoad} from './$types';
 import {redirect} from "@sveltejs/kit";
-import {getUserById} from "$lib/api/user";
+import UserEndpoint from "$lib/api/UserEndpoint";
 
 
 export const load = (async ({ cookies,locals }) => {
@@ -8,8 +8,9 @@ export const load = (async ({ cookies,locals }) => {
         redirect(302,'login');
     }
 
+    const userApi = new UserEndpoint(locals.api);
     // @ts-ignore
-    const user = await getUserById(locals.user.id, locals.user.accessToken);
+    const user = await userApi.getUserById(locals.user.id);
 
     return {
         user: user,

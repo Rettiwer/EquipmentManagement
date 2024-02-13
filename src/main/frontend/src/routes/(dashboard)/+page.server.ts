@@ -1,4 +1,4 @@
 import { redirect } from '@sveltejs/kit';
 export function load() {
-    throw redirect(302, '/items');
+    throw redirect(302, '/invoices');
 }

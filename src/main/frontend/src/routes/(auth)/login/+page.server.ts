@@ -1,9 +1,9 @@
 import {type Actions, error, redirect} from '@sveltejs/kit';
 import { sessionManager } from '$lib/server/sessionManager';
-import {type AuthenticationRequest, login} from "$lib/api/auth";
+import AuthEndpoint, {type AuthenticationRequest} from "$lib/api/AuthEndpoint";
 
 export const actions: Actions = {
-    default: async ({ request, cookies }) => {
+    default: async ({ locals, request, cookies }) => {
         const formData = await request.formData();
 
         let data: AuthenticationRequest = {
@@ -12,13 +12,12 @@ export const actions: Actions = {
         }
 
         try {
-            const res = await login(data);
+            const res = await new AuthEndpoint(locals.api).authenticate(data);
 
             await sessionManager.createSession(
                 cookies,
                 {
                     id: res.userId,
-                    email: formData.get('email'),
                     accessToken: res.access_token,
                     refreshToken: res.refresh_token,
                 },
@@ -28,6 +27,6 @@ export const actions: Actions = {
             return {success: false, error: error };
         }
 
-        redirect(303, '/items');
+        redirect(303, '/invoices');
     }
 };

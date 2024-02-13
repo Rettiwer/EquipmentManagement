@@ -8,7 +8,7 @@
             "full_name": "Krzysztof Joszko",
             "items": [
                 {
-                    "name": "Test items item",
+                    "name": "Test invoices item",
                     "price": 100,
                     "invoice": {
                         "invoice_id": "2022/2/2",
@@ -20,7 +20,7 @@
             "full_name": "Krzysztof Joszko",
             "items": [
                 {
-                    "name": "Test items item",
+                    "name": "Test invoices item",
                     "price": 100,
                     "invoice": {
                         "invoice_id": "2022/2/2",
@@ -29,7 +29,7 @@
             ]
         }
     ];
-    $: $page, console.log($page);
+  //  $: $page, console.log($page);
 </script>
 
 <svelte:head>
@@ -90,10 +90,10 @@
 
             <hr>
 
-            <div class="flex flex-col justify-center m-4 sm:flex-row sm:space-bettween">
-                <Button class="mb-4 sm:mb-0">
+            <div class="flex flex-col justify-center m-4 sm:flex-row sm:space-between">
+                <a href="/invoices/new" class="btn btn-primary mb-4 sm:mb-0">
                     New Invoice
-                </Button>
+                </a>
             </div>
         </div>
     </section>

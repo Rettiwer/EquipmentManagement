@@ -1,6 +1,7 @@
 package com.rettiwer.equipmentmanagement.item;
 
 import com.rettiwer.equipmentmanagement.item.validator.IsSupervisorEmployee;
+import com.rettiwer.equipmentmanagement.user.BasicUserDTO;
 import com.rettiwer.equipmentmanagement.user.role.validator.IsUserExists;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -35,7 +36,7 @@ public class ItemDTO {
     @NotNull
     @IsUserExists
     @IsSupervisorEmployee
-    private Integer ownerId;
+    private BasicUserDTO owner;
 
     private Long invoiceId;
 }

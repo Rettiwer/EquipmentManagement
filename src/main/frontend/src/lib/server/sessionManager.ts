@@ -3,7 +3,6 @@ import Redis from 'ioredis';
 import { SECRET, REDIS_URL } from '$env/static/private';
 import {dev} from "$app/environment";
 
-// Now we will create new Instance for RedisSessionStore
 export const sessionManager = new IoRedisSessionStore ({
     redisClient: new Redis(REDIS_URL),
     secret: SECRET,
