@@ -45,6 +45,20 @@ public class UserService {
         return List.of(userMapper.toUserEmployeesDto(user));
     }
 
+    public List<BasicUserDTO> searchByName(String text) {
+        User user = authService.getCurrentUser();
+
+        if (!user.hasRole(Role.UserRole.ROLE_ADMIN)) {
+            throw new InsufficientPermissionException();
+        }
+
+        String[] parts = text.split("\\s+");
+        String firstName = parts[0];
+        String lastName = parts.length > 1 ? parts[1] : "";
+        return userMapper.toBasicUserDtoList(userRepository
+                .findByFirstnameContainingIgnoreCaseOrLastnameContainingIgnoreCase(firstName, lastName));
+    }
+
     @Transactional
     public UserDTO create(RegisterRequest registerRequest) {
         User currentUser = authService.getCurrentUser();

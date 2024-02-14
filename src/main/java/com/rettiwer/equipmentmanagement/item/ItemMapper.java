@@ -13,7 +13,7 @@ import java.util.List;
         uses = {UserMapper.class})
 public interface ItemMapper {
    // @Mapping(source = "owner.id", target = "ownerId")
-    @Mapping(target = "invoiceId", source = "invoice.id")
+   //Mapping(target = "invoiceId", source = "invoice.id")
     ItemDTO toDto(Item item);
 
   //  @Mapping(source = "ownerId", target = "owner")

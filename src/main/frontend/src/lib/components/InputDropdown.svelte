@@ -39,7 +39,7 @@
                     on:keydown={() => searchInputElement.focus()}
                     placeholder="{ placeholder }"
                     autocomplete="none"
-                    class="input focus:outline-none w-full"
+                    class="input focus:outline-none focus:border-0 w-full"
                     {...$$restProps}
             />
 
@@ -55,7 +55,7 @@
                     on:input
                     bind:this={searchInputElement}
                     type="text"
-                    placeholder="Szukaj?"
+                    placeholder="Search"
                     autocomplete="none"
                     class="input input-sm input-bordered w-full"/>
 

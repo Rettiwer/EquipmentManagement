@@ -18,6 +18,12 @@ public class UserController {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @GetMapping("/search/{text}")
+    public ResponseEntity<?> search(@PathVariable String text) {
+        return new ResponseEntity<>(userService.searchByName(text), HttpStatus.OK);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<?> single(@PathVariable Integer id) {
         return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);

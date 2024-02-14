@@ -56,15 +56,16 @@
 */
 
 
-    import {IconArrowNarrowLeft} from "@tabler/icons-svelte";
+   import {IconArrowNarrowLeft} from "@tabler/icons-svelte";
    import Button from "$lib/components/Button.svelte";
    import Input from "$lib/components/Input.svelte";
    import InvoiceItem from "$lib/components/InvoiceItem.svelte";
-   import {onMount} from "svelte";
-   import type {Item} from "$lib/api/user";
+   import type {Item} from "$lib/api/ItemEndpoint";
+   import { enhance } from '$app/forms';
+   import type {SubmitFunction} from "@sveltejs/kit";
 
    export let form;
-   export let items: Item[];
+   export let items: Item[] = [];
 
    const itemForm = () => {
        return <Item>{
@@ -72,11 +73,16 @@
            name: '',
            price: '0',
            comment: '',
-           owner: null,
-           invoiceId: '',
+           owner: {
+               id: '',
+               firstname: '',
+               lastname: '',
+               email: '',
+               roles: []
+           },
+           invoice: null,
        }
    }
-
    const addItem = () => {
        items = [...items, itemForm()];
    }
@@ -90,9 +96,8 @@
        }
    }
 
-   onMount(() => {
-       addItem();
-   })
+
+   addItem();
 
 </script>
 
@@ -101,7 +106,7 @@
 </svelte:head>
 
 <main>
-    <form class="flex flex-col xl:flex-row justify-around p-10">
+    <form class="flex flex-col xl:flex-row justify-around p-10" method="POST" use:enhance>
         <section class="flex flex-col w-full max-w-4xl mb-10 sm:mr-10 sm:mb-0">
             <h1 class="text-2xl font-bold mb-3 flex items-center cursor-pointer">
 <!--                on:click={() => router.get(window.route('invoices.index'), {}, {replace:true})}>-->
@@ -120,9 +125,9 @@
                     <InvoiceItem itemForm={item}/>
                 </section>
             { /each }
-<!--            <Button class="self-center" on:click={addItem}>-->
-<!--                Dodaj pozycje-->
-<!--            </Button>-->
+            <Button class="self-center" on:click={addItem}>
+                Add item
+            </Button>
         </section>
 
 
@@ -134,33 +139,24 @@
 
                     <Input
                             type="text"
-                            label="Numer"
-                            placeholder="Numer Faktury"
+                            label="ID"
+                            name="invoice_id"
+                            placeholder="Invoice ID"
                             required
                             autocomplete="none"
                     />
                     <Input
                             type="date"
-                            label="Data"
+                            label="Date"
+                            name="date"
                             required
                             autocomplete="none"
                     />
-                    <Input
-                            type="text"
-                            label="Numer Ewidencyjny"
-                            placeholder="Numer Ewidencyjny"
-                            required
-                            autocomplete="none"
-                    />
+
                     <div class="card-actions justify-end">
-                        <!--{#if $invoiceForm.id}-->
-                        <!--    <Button class="ml-4" outlined on:click={() => deleteInvoiceModal.showModal()}>-->
-                        <!--        Usu?-->
-                        <!--    </Button>-->
-                        <!--{ /if }-->
-<!--                        <Button class="ml-4" type="submit" disabled={$invoiceForm.processing}>-->
-<!--                            Zapisz-->
-<!--                        </Button>-->
+                        <Button class="ml-4" type="submit">
+                            Save
+                        </Button>
                     </div>
                 </div>
             </div>

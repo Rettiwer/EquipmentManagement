@@ -15,6 +15,10 @@ import java.util.List;
         uses = {RoleMapper.class})
 public interface UserMapper {
 
+    BasicUserDTO toBasicUserDto(User user);
+
+    List<BasicUserDTO> toBasicUserDtoList(List<User> users);
+
     User idToEntity(Integer id);
 
     @Mapping(target = "supervisorId", source = "supervisor.id")

@@ -1,5 +1,6 @@
 package com.rettiwer.equipmentmanagement.item;
 
+import com.rettiwer.equipmentmanagement.invoice.InvoiceDTO;
 import com.rettiwer.equipmentmanagement.item.validator.IsSupervisorEmployee;
 import com.rettiwer.equipmentmanagement.user.BasicUserDTO;
 import com.rettiwer.equipmentmanagement.user.role.validator.IsUserExists;
@@ -38,5 +39,5 @@ public class ItemDTO {
     @IsSupervisorEmployee
     private BasicUserDTO owner;
 
-    private Long invoiceId;
+    private InvoiceDTO invoice;
 }
