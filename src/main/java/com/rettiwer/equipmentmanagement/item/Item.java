@@ -33,7 +33,7 @@ public class Item {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="invoice_id", nullable = false)
     private Invoice invoice;
 }

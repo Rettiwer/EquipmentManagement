@@ -23,7 +23,7 @@ public class InvoiceItemsDTO {
         private String invoiceId;
         @NonNull
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-        private LocalDate invoiceDate;
+        private LocalDate date;
 
         @NonNull
         @Valid

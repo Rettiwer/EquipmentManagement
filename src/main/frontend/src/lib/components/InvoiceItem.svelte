@@ -7,8 +7,8 @@
     export let itemForm: Item;
 
     let users: User[] = [];
-    async function searchUser(name: string) {
-        console.log('a');
+    async function searchUser(e: any) {
+        let name = e.target.value;
         if (!name) {
             users = [];
             return;
@@ -22,11 +22,8 @@
 
         users = await response.json();
     }
-
-    $: users,console.log(users);
-
 </script>
-<div class="card border card-compact w-full bg-base-100 shadow-md text-accent">
+<div class="card card-compact w-full bg-base-300 shadow-md">
     <div class="card-body">
         <section class="flex flex-col content-around sm:flex-row">
             <Input
@@ -56,7 +53,7 @@
                            bind:displayValue={itemForm.owner.firstname}
                            bind:value={itemForm.owner.id}
                            let:item
-                           on:input={(e) => searchUser(e.target.value) }>
+                           on:input={(e) => searchUser(e) }>
 
                                     <span class="mx-2 label-text text-base" data-id="{item.id}">
                                                 {item.firstname} {item.lastname}

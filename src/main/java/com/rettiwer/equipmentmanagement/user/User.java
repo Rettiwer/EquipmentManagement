@@ -30,6 +30,7 @@ public class User implements UserDetails {
 
     private String firstname;
 
+    @Column(name = "lastname", columnDefinition = "VARCHAR(255) NOT NULL, FULLTEXT KEY fullname_fulltext (firstname, lastname)")
     private String lastname;
 
     @Column(unique = true)

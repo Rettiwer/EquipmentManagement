@@ -52,11 +52,8 @@ public class UserService {
             throw new InsufficientPermissionException();
         }
 
-        String[] parts = text.split("\\s+");
-        String firstName = parts[0];
-        String lastName = parts.length > 1 ? parts[1] : "";
         return userMapper.toBasicUserDtoList(userRepository
-                .findByFirstnameContainingIgnoreCaseOrLastnameContainingIgnoreCase(firstName, lastName));
+                .findFullTextSearchFullName(text));
     }
 
     @Transactional

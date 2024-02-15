@@ -7,7 +7,7 @@ export type Item = {
     name: string,
     price: string,
     comment: string,
-    owner: User | null,
+    owner: User,
     invoice: Invoice | null,
 
 }

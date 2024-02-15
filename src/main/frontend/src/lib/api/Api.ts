@@ -43,12 +43,11 @@ class Api {
     }
 
     apiRequest(method: string, url: string, request: any, enableRetries: boolean = true): Promise<any> {
-        let headers = {};
-        if (this.accessToken !== null) {
-             headers = {
-                Authorization: 'Bearer ' + this.accessToken,
-            };
-        }
+        let headers = {
+            Authorization: this.accessToken !== null ? 'Bearer ' + this.accessToken : '',
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+        };
 
         // let axiosInstance: AxiosInstance = this.axiosInstance;
         // if (!enableRetries) {
@@ -84,6 +83,14 @@ class Api {
 
     post(url: string, request: any, enableRetries: boolean = true): Promise<any> {
         return this.apiRequest("post", url, request, enableRetries);
+    }
+
+    put(url: string, request: any, enableRetries: boolean = true): Promise<any> {
+        return this.apiRequest("put", url, request, enableRetries);
+    }
+
+    delete(url: string): Promise<any> {
+        return this.apiRequest("delete", url, null, false);
     }
 
 }

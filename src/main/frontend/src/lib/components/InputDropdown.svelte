@@ -1,11 +1,11 @@
 <script lang="ts">
     import {IconX} from "@tabler/icons-svelte";
 
-    export let label: string, placeholder: string, data: any, dropdownElement, value: string, displayValue: string;
+    export let label: string, placeholder: string, data: any, value: string | number | null, displayValue: string | null;
 
-    let searchInputElement;
+    let searchInputElement: HTMLInputElement, dropdownElement: HTMLElement;
 
-    function selectItem(e) {
+    function selectItem(e: any) {
         let item = e.currentTarget.getElementsByTagName('span')[0];
         displayValue = item.innerHTML;
         value = parseInt(item.dataset.id);
@@ -26,12 +26,12 @@
 
 </script>
 <div class="form-control w-auto">
-    <label class="label">
+    <label class="label" for="">
         <span class="label-text">{ label } {@html $$restProps.required ? '<span class="text-primary">*</span>' : ''}</span>
     </label>
 
     <div class="dropdown w-full mb-4 bg-base-100">
-        <div class="flex items-center outline outline-1 outline-accent/30 rounded-lg">
+        <div class="flex items-center outline outline-1 outline-neutral rounded-lg">
             <input
                     type="text"
                     tabIndex={0}
@@ -43,10 +43,12 @@
                     {...$$restProps}
             />
 
-            <div class="btn btn-xs btn-circle btn-accent mx-3" on:click={() => reset()} class:invisible={!displayValue}>
+            <!-- A11y: visible, non-interactive elements with an on:click event must be accompanied by a keyboard event handler. -->
+            <div class="btn btn-xs btn-circle btn-secondary mx-3" on:click={() => reset()} class:invisible={!displayValue}>
                 <IconX/>
             </div>
         </div>
+        <!-- A11y: noninteractive element cannot have nonnegative tabIndex value -->
         <div tabindex="0" class="w-full dropdown-content p-4 shadow-lg bg-base-100 rounded-box mt-1 z-10"
              bind:this={dropdownElement}>
 

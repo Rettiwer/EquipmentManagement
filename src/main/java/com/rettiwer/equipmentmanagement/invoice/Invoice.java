@@ -22,8 +22,9 @@ public class Invoice {
     private Long id;
 
     private String invoiceId;
-    private LocalDate invoiceDate;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice", cascade = CascadeType.ALL)
+    private LocalDate date;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "invoice", orphanRemoval = true)
     private List<Item> items;
 }
