@@ -28,6 +28,15 @@ class UserEndpoint extends Api {
         super(baseApi.accessToken, baseApi.refreshToken);
     }
 
+    async all() {
+        try {
+            const response = await this.get('users', null);
+            return response as User[];
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async getUserById(id: string) {
         try {
             const response = await this.get('users/' + id, null);

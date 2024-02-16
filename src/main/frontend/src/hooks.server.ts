@@ -23,17 +23,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 
         const authEndpoint = new AuthEndpoint(api);
         await authEndpoint.ping().then(()=> {
-            console.log(1);
             event.locals = {
                 isUserLoggedIn: true,
                 user: userSession.data,
                 api: new Api(userSession.data.accessToken, userSession.data.refreshToken),
             };
         }).catch(async () => {
-            console.log(2);
             await authEndpoint.refresh({userId, refreshToken})
                 .then(async res => {
-                    console.log(3);
                     userSession = await sessionManager.updateSession(
                         await event.cookies,
                         {
@@ -42,10 +39,7 @@ export const handle: Handle = async ({ event, resolve }) => {
                             refreshToken: res.refresh_token,
                         },
                     )
-                    // api.accessToken = res.access_token;
-                    // api.refreshToken = res.refresh_token;
                 }).catch(async error => {
-                    console.log(4);
                     await sessionManager.deleteCookie(await event.cookies);
                     return resolve(event);
                 });

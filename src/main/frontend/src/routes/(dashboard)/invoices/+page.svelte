@@ -1,8 +1,6 @@
 <script lang="ts">
     import {page} from "$app/stores";
     import {hasRole, RoleName} from "$lib/api/UserEndpoint";
-
-    $: $page, console.log($page);
 </script>
 
 <svelte:head>
