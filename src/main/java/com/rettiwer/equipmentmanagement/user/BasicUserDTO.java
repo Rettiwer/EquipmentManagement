@@ -19,6 +19,6 @@ public class BasicUserDTO {
     private String firstname;
     private String lastname;
     private String email;
-    private Integer supervisorId;
+    private BasicUserDTO supervisor;
     private List<RoleDTO> roles;
 }

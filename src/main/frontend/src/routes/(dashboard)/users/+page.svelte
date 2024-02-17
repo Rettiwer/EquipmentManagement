@@ -51,7 +51,7 @@
                                         </td>
                                         <th class="lg:w-40 text-center">
                                             <Button class="btn-xs ml-4">
-                                                <a href="/users/${user.id}/edit">
+                                                <a href={`/users/${employee.id}/edit`}>
                                                     EDIT
                                                 </a>
                                             </Button>
@@ -78,7 +78,7 @@
         {/if}
     </section>
 
-    <section class="sticky top-10 self-start w-full xl:w-fit">
+    <section class="sticky top-10 self-start w-full min-w-52 xl:w-fit">
         <h1 class="text-2xl font-bold mb-3">Summary</h1>
         <div class="card card-compact bg-base-300 shadow-xl">
             <div class="stats stats-vertical bg-transparent lg:stats-horizontal">

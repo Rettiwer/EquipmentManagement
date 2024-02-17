@@ -14,7 +14,7 @@ export type User = {
     firstname: string,
     lastname: string,
     email: string,
-    password: string | undefined,
+    password: string | null,
     supervisor: User,
     roles: Role[],
 }
@@ -38,7 +38,7 @@ class UserEndpoint extends Api {
         }
     }
 
-    async getUserById(id: string) {
+    async getById(id: string) {
         try {
             const response = await this.get('users/' + id, null);
             return response as User;
@@ -63,7 +63,14 @@ class UserEndpoint extends Api {
             throw error;
         }
     }
-
+    async update(request: User) {
+        try {
+            const response = await this.put('users/' + request.id, request);
+            return response as User;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default UserEndpoint;

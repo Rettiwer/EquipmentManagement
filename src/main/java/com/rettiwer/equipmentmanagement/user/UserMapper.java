@@ -14,8 +14,6 @@ import java.util.List;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {RoleMapper.class})
 public interface UserMapper {
-
-    @Mapping(target = "supervisorId", source = "supervisor.id")
     BasicUserDTO toBasicUserDto(User user);
 
     List<BasicUserDTO> toBasicUserDtoList(List<User> users);

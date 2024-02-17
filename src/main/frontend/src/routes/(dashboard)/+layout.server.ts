@@ -10,7 +10,7 @@ export const load = (async ({ cookies,locals }) => {
 
     const userApi = new UserEndpoint(locals.api);
     // @ts-ignore
-    const user = await userApi.getUserById(locals.user.id);
+    const user = await userApi.getById(locals.user.id);
 
     return {
         user: user,

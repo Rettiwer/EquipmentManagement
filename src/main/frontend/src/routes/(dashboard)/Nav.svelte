@@ -2,8 +2,11 @@
     import NavItem from "$lib/components/NavItem.svelte";
     import Logo from "$lib/components/Logo.svelte";
     import {page} from "$app/stores";
+    import {IconLogout, IconTool, IconUser, IconUsers} from "@tabler/icons-svelte";
 
     let visibleMobileMenu = false;
+
+    console.log($page.url)
 </script>
 
 <nav>
@@ -27,23 +30,20 @@
 
             <ul class="space-y-2">
                 <li>
-                    <a href="/" on:click={() => (visibleMobileMenu = !visibleMobileMenu)}>
-                        <NavItem title="Wyposażenie" selected={false}>
-                        <span slot="before">
-<!--                            <Icon><FaTools /></Icon>-->
-                        </span>
+                    <a href="/invoices" on:click={() => (visibleMobileMenu = !visibleMobileMenu)}>
+                        <NavItem title="Equipment" selected={$page.url.pathname.startsWith("/invoice")} >
+                            <span slot="before">
+                                <IconTool />
+                            </span>
                         </NavItem>
                     </a>
                 </li>
                 <li>
-                    <a href="/" on:click={() => (visibleMobileMenu = !visibleMobileMenu)}>
-                        <NavItem title="Oczekujące" selected={false}>
-                        <span slot="before">
-<!--                            <Icon><FaRegClock /></Icon>-->
-                        </span>
-                            <span slot="after">
-                            <div class="badge badge-lg badge-outline">0</div>
-                        </span>
+                    <a href="/users" on:click={() => (visibleMobileMenu = !visibleMobileMenu)}>
+                        <NavItem title="Users" selected={$page.url.pathname.startsWith("/users")}>
+                            <span slot="before">
+                                <IconUsers />
+                            </span>
                         </NavItem>
                     </a>
                 </li>
@@ -51,19 +51,19 @@
             <ul class="space-y-2 mt-10">
                 <li>
                     <a href="/">
-                        <NavItem title={$page.data.user.firstname + ' ' + $page.data.user?.lastname} selected>
-                    <span slot="before">
-<!--                        <Icon><FaRegUserCircle /></Icon>-->
-                    </span>
+                        <NavItem title={$page.data.user.firstname + ', ' + $page.data.user?.lastname} selected>
+                            <span slot="before">
+                                <IconUser />
+                            </span>
                         </NavItem>
                     </a>
                 </li>
                 <li>
                     <a href="/logout" >
                         <NavItem title="Logout">
-                        <span slot="before">
-<!--                            <Icon><FaRegArrowAltCircleLeft /></Icon>-->
-                        </span>
+                            <span slot="before">
+                                <IconLogout />
+                            </span>
                         </NavItem>
                     </a>
                 </li>

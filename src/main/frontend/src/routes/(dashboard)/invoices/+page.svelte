@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-    <title>Equipment - EM</title>
+    <title>Invoices</title>
 </svelte:head>
 
 <section class="flex flex-col xl:flex-row justify-around p-10">
