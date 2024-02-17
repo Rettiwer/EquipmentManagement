@@ -1,14 +1,14 @@
 <script lang="ts">
     import {IconX} from "@tabler/icons-svelte";
 
-    export let label: string, placeholder: string, data: any, value: string | number | null, displayValue: string | null;
+    export let label: string, placeholder: string, data: any, value: any, displayValue: string | null;
 
     let searchInputElement: HTMLInputElement, dropdownElement: HTMLElement;
 
     function selectItem(e: any) {
         let item = e.currentTarget.getElementsByTagName('span')[0];
         displayValue = item.innerHTML;
-        value = parseInt(item.dataset.id);
+        value = JSON.parse(item.dataset.item);
         dropdownElement.blur();
     }
 

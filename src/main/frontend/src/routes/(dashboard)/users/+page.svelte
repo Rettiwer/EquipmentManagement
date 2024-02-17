@@ -1,14 +1,10 @@
 <script lang="ts">
     import {page} from "$app/stores";
-    import {hasRole, RoleName} from "$lib/api/UserEndpoint";
     import Button from "$lib/components/Button.svelte";
-
-
-    $: $page, console.log($page.data)
 </script>
 
 <svelte:head>
-    <title>Equipment - EM</title>
+    <title>Employees</title>
 </svelte:head>
 
 <main class="flex flex-col xl:flex-row justify-around p-10">
@@ -44,20 +40,20 @@
                                         <td>{employee.firstname}</td>
                                         <td>{employee.lastname}</td>
                                         <td class="lg:w-64 text-center">
-                                            {#if employee['roles'].length > 0}
-                                                { #each employee.role as role }
+                                            {#if employee.roles }
+                                                { #each employee.roles as role }
                                                     <div class="badge badge-accent mb-1">{ role.name }</div>
                                                     <br/>
                                                 { /each }
                                             { :else }
-                                                <div class="badge badge-accent">Employee</div>
+                                                <div class="badge badge-accent">NO ROLES</div>
                                             {/if}
                                         </td>
                                         <th class="lg:w-40 text-center">
                                             <Button class="btn-xs ml-4">
-<!--                                                <a use:inertia="{{ replace: true }}" href={window.route('employees.edit', employee.id)}>-->
-<!--                                                    EDYTUJ-->
-<!--                                                </a>-->
+                                                <a href="/users/${user.id}/edit">
+                                                    EDIT
+                                                </a>
                                             </Button>
                                         </th>
                                     </tr>
@@ -84,8 +80,8 @@
 
     <section class="sticky top-10 self-start w-full xl:w-fit">
         <h1 class="text-2xl font-bold mb-3">Summary</h1>
-        <div class="card card-compact bg-base-100 shadow-xl">
-            <div class="stats stats-vertical lg:stats-horizontal">
+        <div class="card card-compact bg-base-300 shadow-xl">
+            <div class="stats stats-vertical bg-transparent lg:stats-horizontal">
 
                 <div class="stat">
                     <div class="stat-title">Employees</div>
@@ -93,11 +89,11 @@
                 </div>
             </div>
 
-            <hr>
+            <hr class="h-px bg-neutral border-0">
 
             <div class="flex flex-col justify-center m-4 sm:flex-row sm:space-between">
                 <a href="/users/new" class="btn btn-primary mb-4 sm:mb-0">
-                    Dodaj pracownika
+                    New employee
                 </a>
             </div>
         </div>

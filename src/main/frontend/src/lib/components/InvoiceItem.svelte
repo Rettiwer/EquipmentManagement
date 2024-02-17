@@ -6,6 +6,11 @@
 
     export let itemForm: Item;
 
+    let ownerFullName = '';
+    $: if (itemForm.owner != null) {
+        ownerFullName = itemForm.owner.firstname + ', ' + itemForm.owner.lastname
+    }
+
     let users: User[] = [];
     async function searchUser(e: any) {
         let name = e.target.value;
@@ -50,13 +55,13 @@
                            placeholder="Search owner"
                            required
                            data={ users }
-                           bind:displayValue={itemForm.owner.firstname}
-                           bind:value={itemForm.owner.id}
+                           bind:displayValue={ownerFullName}
+                           bind:value={itemForm.owner}
                            let:item
                            on:input={(e) => searchUser(e) }>
 
-                                    <span class="mx-2 label-text text-base" data-id="{item.id}">
-                                                {item.firstname} {item.lastname}
+                                    <span class="mx-2 label-text text-base" data-item={JSON.stringify(item)}>
+                                                {item.firstname}, {item.lastname}
                                     </span>
             </InputDropdown>
             <Input

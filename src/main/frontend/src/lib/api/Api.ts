@@ -1,6 +1,4 @@
 import axios, {type AxiosInstance} from "axios";
-import axiosRetry from "axios-retry";
-
 const API_BASE:string = 'http://192.168.1.152/api/';
 
 interface ApiError {
@@ -24,38 +22,22 @@ class Api {
             baseURL: API_BASE
         });
 
-        // axiosRetry(this.axiosInstance, {
-        //     retries: 1,
-        //     retryCondition: (error: any) => {
-        //         // Retry only if the error is 401 (Unauthorized)
-        //         return axiosRetry.isNetworkError(error) || (error.response && error.response.status === 401);
-        //     }
-        // });
-        //
-        // this.axiosInstance.interceptors.response.use(
-        //     response => {
-        //         return response;
-        //     },
-        //      error => {
-        //         return Promise.reject(error);
-        //     }
-        // );
     }
 
-    apiRequest(method: string, url: string, request: any, enableRetries: boolean = true): Promise<any> {
+    apiRequest(method: string, url: string, request: any= {}, queryParams: any = {}): Promise<any> {
         let headers = {
             Authorization: this.accessToken !== null ? 'Bearer ' + this.accessToken : '',
             'Content-Type': 'application/json',
             Accept: 'application/json'
         };
 
-        // let axiosInstance: AxiosInstance = this.axiosInstance;
-        // if (!enableRetries) {
-        //     // If retries are disabled, use a fresh instance of axios
-        //     axiosInstance = axios.create({
-        //         baseURL: API_BASE
-        //     });
-        // }
+        let queryString = Object.keys(queryParams)
+            .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(queryParams[key]))
+            .join('&');
+
+        if (queryString) {
+            url += (url.indexOf('?') === -1 ? '?' : '&') + queryString;
+        }
 
         return this.axiosInstance({
             method,
@@ -77,16 +59,16 @@ class Api {
             });
     }
 
-    get(url: string, request: any, enableRetries: boolean = true): Promise<any> {
-        return this.apiRequest("get", url, request, enableRetries);
+    get(url: string, request: any= {}, queryParams: any = {}): Promise<any> {
+        return this.apiRequest("get", url, request, queryParams);
     }
 
-    post(url: string, request: any, enableRetries: boolean = true): Promise<any> {
-        return this.apiRequest("post", url, request, enableRetries);
+    post(url: string, request: any= {}): Promise<any> {
+        return this.apiRequest("post", url, request);
     }
 
-    put(url: string, request: any, enableRetries: boolean = true): Promise<any> {
-        return this.apiRequest("put", url, request, enableRetries);
+    put(url: string, request: any= {}): Promise<any> {
+        return this.apiRequest("put", url, request);
     }
 
     delete(url: string): Promise<any> {

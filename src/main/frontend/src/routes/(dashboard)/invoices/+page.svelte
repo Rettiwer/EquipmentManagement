@@ -67,8 +67,8 @@
 
     <section class="sticky top-10 self-start w-full xl:w-fit">
         <h1 class="text-2xl font-bold mb-3">Summary</h1>
-        <div class="card card-compact bg-base-100 shadow-xl">
-            <div class="stats stats-vertical lg:stats-horizontal">
+        <div class="card card-compact bg-base-300 shadow-xl">
+            <div class="stats stats-vertical bg-transparent lg:stats-horizontal">
 
                 <div class="stat">
                     <div class="stat-title">Amount of equipment</div>
@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            <hr>
+            <hr class="h-px bg-neutral border-0">
 
             <div class="flex flex-col justify-center m-4 sm:flex-row sm:space-between">
                 <a href="/invoices/new" class="btn btn-primary mb-4 sm:mb-0">

@@ -7,33 +7,16 @@
     import {goto, invalidateAll} from '$app/navigation';
     import {applyAction, deserialize} from '$app/forms';
     import {page} from "$app/stores";
-    import {onMount} from "svelte";
 
     export let form;
 
     let invoiceId = $page.data.invoice.invoiceId;
     let date = $page.data.invoice.date;
 
-    let items: Item[] = [];
+    let items: Item[] = $page.data.invoice.items;
 
-    const itemForm = () => {
-        return <Item>{
-            id: '',
-            name: '',
-            price: '0',
-            comment: '',
-            owner: {
-                id: '',
-                firstname: '',
-                lastname: '',
-                email: '',
-                roles: []
-            },
-            invoice: null,
-        }
-    }
     const addItem = () => {
-        items = [...items, itemForm()];
+        items = [...items, <Item>{}];
     }
 
     const removeItem = (itemId: number) => () => {
@@ -41,7 +24,7 @@
             items.splice(itemId, 1);
             items = items;
         } else {
-            items[0] = itemForm();
+            items[0] = <Item>{};
         }
     }
 
@@ -56,9 +39,6 @@
                 console.log('Error:', error);
             });
     }
-
-
-    addItem();
 
     /** @param {{ currentTarget: EventTarget & HTMLFormElement}} event */
     async function handleSubmit(event: any) {
@@ -83,10 +63,6 @@
 
         applyAction(result);
     }
-
-    onMount(() => {
-        items = $page.data.invoice.items;
-    })
 </script>
 
 <svelte:head>

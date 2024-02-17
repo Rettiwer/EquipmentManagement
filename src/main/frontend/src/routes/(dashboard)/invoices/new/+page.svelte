@@ -6,27 +6,16 @@
    import type {Item} from "$lib/api/ItemEndpoint";
    import { invalidateAll, goto } from '$app/navigation';
    import { applyAction, deserialize } from '$app/forms';
+   import type {User} from "$lib/api/UserEndpoint";
 
    export let form;
 
    let items: Item[] = [];
 
    const itemForm = () => {
-       return <Item>{
-           id: '',
-           name: '',
-           price: '0',
-           comment: '',
-           owner: {
-               id: '',
-               firstname: '',
-               lastname: '',
-               email: '',
-               roles: []
-           },
-           invoice: null,
-       }
+       return <Item>{}
    }
+
    const addItem = () => {
        items = [...items, itemForm()];
    }

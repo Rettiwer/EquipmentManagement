@@ -1,5 +1,4 @@
 import Api from "$lib/api/Api";
-
 export enum RoleName {
     ROLE_EMPLOYEE = "ROLE_EMPLOYEE",
     ROLE_SUPERVISOR = "ROLE_SUPERVISOR",
@@ -15,6 +14,8 @@ export type User = {
     firstname: string,
     lastname: string,
     email: string,
+    password: string | undefined,
+    supervisor: User,
     roles: Role[],
 }
 
@@ -46,14 +47,23 @@ class UserEndpoint extends Api {
         }
     }
 
-    async searchUserByName(name: string) {
+    async searchUserByName(name: string, supervisorOnly: boolean) {
         try {
-            const response = await this.get('users/search/' + name, null);
+            const response = await this.get('users/search/' + name, {},{supervisorOnly: supervisorOnly});
             return response as User[];
         } catch (error) {
             throw error;
         }
     }
+    async save(request: User) {
+        try {
+            const response = await this.post('users', request);
+            return response as User;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 export default UserEndpoint;

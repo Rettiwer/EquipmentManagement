@@ -1,5 +1,5 @@
 import {type Actions, redirect} from "@sveltejs/kit";
-import InvoiceEndpoint, {type Invoice, type InvoiceRequest} from "$lib/api/InvoiceEndpoint";
+import InvoiceEndpoint, {type Invoice} from "$lib/api/InvoiceEndpoint";
 
 export const actions: Actions = {
     default: async ({ locals, request, cookies }) => {
@@ -24,6 +24,6 @@ export const actions: Actions = {
             return {success: false, error: error };
         }
 
-        redirect(303, '/invoices');
+        redirect(303, '/users');
     },
 };

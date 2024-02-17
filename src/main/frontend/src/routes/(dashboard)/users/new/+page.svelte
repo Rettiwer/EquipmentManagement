@@ -3,52 +3,31 @@
     import { invalidateAll, goto } from '$app/navigation';
     import { applyAction, deserialize } from '$app/forms';
     import Input from "$lib/components/Input.svelte";
-    import {hasRole, RoleName} from "$lib/api/UserEndpoint";
-    import InputDropdown from "$lib/components/InputDropdown.svelte";
+    import {hasRole, RoleName, type User} from "$lib/api/UserEndpoint";
     import {page} from "$app/stores";
-    import Checkbox from "$lib/components/Checkbox.svelte";
     import Button from "$lib/components/Button.svelte";
+    import InputDropdown from "$lib/components/InputDropdown.svelte";
+    import Checkbox from "$lib/components/Checkbox.svelte";
 
     export let form;
 
     let user = $page.data.user;
 
-    // let employeeForm = useForm({
-    //     first_name: null,
-    //     last_name: null,
-    //     email: null,
-    //     supervisor_id: null,
-    //     supervisor_name: null,
-    //     roles: [],
-    // });
+    let supervisor: User = <User>{};
 
-    // const onSubmit = () => {
-    //     //If user is not an admin, assign user id as supervisor id
-    //     if (!user.roles.includes('ROLE_ADMIN'))
-    //         $employeeForm.supervisor_id = user.id;
-    //
-    //     $employeeForm.post(window.route('employees.store'), {
-    //         onSuccess: () => {
-    //             $employeeForm.reset();
-    //         },
-    //     });
-    // };
+    let supervisorFullName = '';
+    $: if (supervisor.id != null) {
+        supervisorFullName = supervisor.firstname + ', ' + supervisor.lastname
+    }
 
-    // let supervisors = [];
-    // async function searchSupervisor(name) {
-    //     if (!name) {
-    //         supervisors = [];
-    //         return;
-    //     }
-    //
-    //     const res = await axios.post(window.route('employees.search'), {name: name, supervisor: true});
-    //     supervisors = res.data;
-    // }
+    let roles: RoleName[] = [RoleName.ROLE_EMPLOYEE];
+
 
     /** @param {{ currentTarget: EventTarget & HTMLFormElement}} event */
     async function handleSubmit(event: any) {
         const data = new FormData(event.currentTarget);
-       //data.append('items', JSON.stringify(items));
+        data.append('supervisor', JSON.stringify(supervisor));
+        data.append('roles', JSON.stringify(roles));
 
         const response = await fetch(event.currentTarget.action, {
             method: 'POST',
@@ -68,6 +47,25 @@
 
         applyAction(result);
     }
+
+    let supervisors: User[] = [];
+    async function searchSupervisor(e: any) {
+        let name = e.target.value;
+        if (!name) {
+            supervisors = [];
+            return;
+        }
+        const response = await fetch('/api/users/search/' + name + '?' +new URLSearchParams({supervisorOnly: 'true'}), {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+
+        supervisors = await response.json();
+    }
+
+
 </script>
 <svelte:head>
     <title>New employee</title>
@@ -81,8 +79,9 @@
         </a>
         <div class="card bg-base-100 shadow-md rounded-xl">
             <div class="card-body">
-<!--                <ValidationErrors class="mb-4" errors={errors}/>-->
-
+                {#if !form?.success && form?.error.message != null }
+                    <p class="text-red-500">{form.error.message}</p>
+                {/if}
 
                 <form on:submit|preventDefault={handleSubmit}>
                     <Input
@@ -107,26 +106,34 @@
                             type="text"
                             label="Email"
                             name="email"
-                            requiredl
+                            required
                             placeholder="e.g. someone@example.com"
+                            autocomplete="none"
+                    />
+
+                    <Input
+                            type="password"
+                            label="Password"
+                            name="password"
+                            required
                             autocomplete="none"
                     />
 
 
                     {#if hasRole(user, RoleName.ROLE_ADMIN) }
 
-<!--                            <InputDropdown label="Supervisor"-->
-<!--                                           placeholder="Search supervisor"-->
-<!--                                           data={ supervisors }-->
-<!--                                           bind:displayValue={$employeeForm.supervisor_name}-->
-<!--                                           bind:value={$employeeForm.supervisor_id}-->
-<!--                                           let:item-->
-<!--                                           on:input={(e) => searchSupervisor(e.target.value) }>-->
+                            <InputDropdown label="Supervisor"
+                                           placeholder="Search supervisor"
+                                           data={ supervisors }
+                                           bind:displayValue={supervisorFullName}
+                                           bind:value={supervisor}
+                                           let:item
+                                           on:input={(e) => searchSupervisor(e) }>
 
-<!--                                    <span class="mx-2 label-text text-base" data-id="{item.id}">-->
-<!--                                                {item.first_name}, {item.last_name}-->
-<!--                                    </span>-->
-<!--                            </InputDropdown>-->
+                                    <span class="mx-2 label-text text-base" data-item={JSON.stringify(item)}>
+                                                {item.firstname}, {item.lastname}
+                                    </span>
+                            </InputDropdown>
 
                     {/if}
 
@@ -134,11 +141,14 @@
                         <fieldset>
                             <legend>Rola</legend>
 
-<!--                            <Checkbox value={RoleName.ROLE_ADMIN} label="Admin"-->
-<!--                                          bind:groupValues={$employeeForm.roles}/>-->
+                            <Checkbox value={RoleName.ROLE_ADMIN} label="Admin"
+                                          bind:groupValues={roles}/>
 
-<!--                            <Checkbox value={RoleName.ROLE_SUPERVISOR} label="Supervisor"-->
-<!--                                      bind:groupValues={$employeeForm.roles}/>-->
+                            <Checkbox value={RoleName.ROLE_SUPERVISOR} label="Supervisor"
+                                      bind:groupValues={roles}/>
+
+                            <Checkbox value={RoleName.ROLE_EMPLOYEE} label="Employee"
+                                      bind:groupValues={roles}/>
 
                         </fieldset>
                     {/if}

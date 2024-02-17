@@ -1,5 +1,4 @@
 import type {PageServerLoad} from './$types';
-import UserItemsEndpoint from "$lib/api/ItemEndpoint";
 import UserEndpoint from "$lib/api/UserEndpoint";
 
 export const load = (async ({ locals }) => {
