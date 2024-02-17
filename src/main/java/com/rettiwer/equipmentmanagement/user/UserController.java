@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -19,10 +21,9 @@ public class UserController {
     }
 
     @GetMapping("/search/{text}")
-    public ResponseEntity<?> search(@PathVariable String text) {
-        return new ResponseEntity<>(userService.searchByName(text), HttpStatus.OK);
+    public ResponseEntity<?> search(@PathVariable String text, @RequestParam Optional<Boolean> supervisorOnly) {
+        return new ResponseEntity<>(userService.searchByName(text, supervisorOnly), HttpStatus.OK);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<?> single(@PathVariable Integer id) {

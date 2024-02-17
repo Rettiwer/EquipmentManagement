@@ -1,6 +1,7 @@
 package com.rettiwer.equipmentmanagement.authentication;
 
 import com.rettiwer.equipmentmanagement.authentication.validator.UniqueEmail;
+import com.rettiwer.equipmentmanagement.user.BasicUserDTO;
 import com.rettiwer.equipmentmanagement.user.role.RoleDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -48,5 +49,5 @@ public class RegisterRequest {
     @Valid
     private List<RoleDTO> roles;
 
-    private Integer supervisorId;
+    private BasicUserDTO supervisor;
 }

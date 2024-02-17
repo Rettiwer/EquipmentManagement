@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,7 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public UserDTO getById(Integer id) {
+    public BasicUserDTO getById(Integer id) {
         User user = authService.getCurrentUser();
 
         if (user.hasAnyRole(List.of(Role.UserRole.ROLE_ADMIN, Role.UserRole.ROLE_SUPERVISOR)) &&
@@ -32,28 +33,35 @@ public class UserService {
             throw new InsufficientPermissionException();
         }
 
-        return userMapper.toUserDto(userRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+        return userMapper.toBasicUserDto(userRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     public List<UserEmployeesDTO> getAllUsers() {
         User user = authService.getCurrentUser();
 
         if (user.hasRole(Role.UserRole.ROLE_ADMIN)) {
-            return userMapper.toUserEmployeesDtoList(userRepository.findAll());
+            return userMapper.toUserEmployeesDtoList(userRepository.findByRoles(List.of(Role.UserRole.ROLE_ADMIN,
+                    Role.UserRole.ROLE_SUPERVISOR)));
         }
 
         return List.of(userMapper.toUserEmployeesDto(user));
     }
 
-    public List<BasicUserDTO> searchByName(String text) {
+    public List<BasicUserDTO> searchByName(String text, Optional<Boolean> supervisorOnly) {
         User user = authService.getCurrentUser();
 
         if (!user.hasRole(Role.UserRole.ROLE_ADMIN)) {
             throw new InsufficientPermissionException();
         }
 
+        if (supervisorOnly.isPresent() && supervisorOnly.get().equals(true)) {
+            System.out.println(1);
+            return userMapper.toBasicUserDtoList(userRepository
+                    .searchSupervisorByFullName(text));
+        }
+        System.out.println(2);
         return userMapper.toBasicUserDtoList(userRepository
-                .findFullTextSearchFullName(text));
+                .searchUserByFullName(text));
     }
 
     @Transactional
@@ -63,7 +71,7 @@ public class UserService {
         //Only ROLE_ADMIN can insert employee for different supervisor
         if (!currentUser.hasRole(Role.UserRole.ROLE_ADMIN)) {
             if (!currentUser.hasRole(Role.UserRole.ROLE_SUPERVISOR) ||
-                    !registerRequest.getSupervisorId().equals(currentUser.getId())) {
+                    !registerRequest.getSupervisor().getId().equals(currentUser.getId())) {
                 throw new InsufficientPermissionException();
             }
 
@@ -73,6 +81,12 @@ public class UserService {
                 throw new InsufficientPermissionException();
             }
         }
+
+        if (registerRequest.getRoles().stream()
+                .noneMatch(roleDTO -> Objects.equals(roleDTO.getName(), Role.UserRole.ROLE_ADMIN.name) ||
+                        Objects.equals(roleDTO.getName(), Role.UserRole.ROLE_SUPERVISOR.name))
+                        && registerRequest.getSupervisor() == null)
+            throw new RelationConstraintViolationException("User with only the employee role must have supervisor assigned.");
 
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 

@@ -52,6 +52,5 @@ public interface UserMapper {
 
      */
 
-    @Mapping(source = "supervisorId", target = "supervisor")
     User registerRequestToEntity(RegisterRequest request);
 }
