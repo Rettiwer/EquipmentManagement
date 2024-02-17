@@ -24,6 +24,6 @@ export const actions: Actions = {
             return {success: false, error: error };
         }
 
-        redirect(303, '/users');
+        redirect(303, '/invoices');
     },
 };

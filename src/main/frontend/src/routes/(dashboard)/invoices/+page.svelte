@@ -72,7 +72,7 @@
 
                 <div class="stat">
                     <div class="stat-title">Amount of equipment</div>
-                    <div class="stat-value">5</div>
+                    <div class="stat-value">{$page.data.equipmentAmount}</div>
                 </div>
             </div>
 

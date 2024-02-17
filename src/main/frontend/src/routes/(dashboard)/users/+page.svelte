@@ -85,7 +85,7 @@
 
                 <div class="stat">
                     <div class="stat-title">Employees</div>
-                    <div class="stat-value">5</div>
+                    <div class="stat-value">{$page.data.userCount}</div>
                 </div>
             </div>
 

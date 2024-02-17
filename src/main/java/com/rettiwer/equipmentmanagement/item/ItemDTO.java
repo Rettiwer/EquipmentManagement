@@ -30,7 +30,6 @@ public class ItemDTO {
     @NotNull
     private BigDecimal price;
 
-    @NonNull
     private String comment;
 
     @NonNull

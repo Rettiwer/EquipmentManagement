@@ -7,7 +7,13 @@ export const load = (async ({ locals }) => {
 
     const userItems = await userItemsApi.getUserItems();
 
+    let equipmentCount = 0;
+    userItems.map(function(val){
+        equipmentCount += val.items.length;
+    });
+
     return {
+        equipmentAmount: equipmentCount,
         userItems: userItems,
     };
 }) satisfies PageServerLoad;

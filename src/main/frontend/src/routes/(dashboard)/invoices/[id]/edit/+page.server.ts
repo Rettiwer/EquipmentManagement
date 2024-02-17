@@ -45,30 +45,5 @@ export const actions: Actions = {
         }
 
         redirect(303, '/invoices');
-    },
-    delete: async ({ locals, request, cookies }) => {
-        const formData = await request.formData();
-
-        const id = formData.get('id') as string;
-        const invoiceId = formData.get('invoice_id') as string;
-        const date = formData.get('date') as string;
-        const itemsField = formData.get("items") as string;
-
-        const items: any = JSON.parse(itemsField);
-
-        let data: Invoice = {
-            id,
-            invoiceId,
-            date,
-            items: items
-        }
-
-        try {
-            const res = await new InvoiceEndpoint(locals.api).update(data);
-        } catch (error)  {
-            return {success: false, error: error };
-        }
-
-        redirect(303, '/invoices');
-    },
+    }
 };
